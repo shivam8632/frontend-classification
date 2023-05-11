@@ -19,6 +19,13 @@
                     border-radius: 0;
                     padding: 15px;
                 }
+                .input-list {
+                    button.scrap {
+                        background-color: #343541;
+                        padding: 8px 15px;
+                        margin-top: 15px;
+                    }
+                }
             }
             form {
                 display: flex;

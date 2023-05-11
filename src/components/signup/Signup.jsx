@@ -5,9 +5,6 @@ import axios from 'axios';
 import { API } from '../../config/Api';
 import { toast } from 'react-toastify';
 
-import Google from '../../assets/google.svg';
-import Outlook from '../../assets/outlook.svg';
-
 function Signup() {
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');

@@ -5,14 +5,10 @@ import { toast } from 'react-toastify';
 import { API } from '../../config/Api';
 import UserContext from '../context/UserContext';
 import axios from 'axios';
-
-import Google from '../../assets/google.svg';
-import Outlook from '../../assets/outlook.svg';
-
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const {setToken} = useContext(UserContext)
+    const {setToken} = useContext(UserContext);
 
     const navigate = useNavigate();
 
@@ -26,7 +22,19 @@ function Login() {
             toast.success("Logged in Successfully!");
             localStorage.setItem("Token",response.data.token.access)
             setToken(localStorage.getItem("Token"))
-            navigate('/dashboard')
+            axios.post(API.BASE_URL + 'userprofile/',{}, {
+                headers: {
+                Authorization: `Bearer ${localStorage.getItem("Token")}`
+            }})
+            .then(function (response) {
+                console.log("UserProfile", response);
+                localStorage.setItem("User_name", response.data.firstname)
+                localStorage.setItem("Check_is_admin", response.data.is_admin)
+                navigate('/dashboard')
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
         })
         .catch(function (error) {
             console.log(error);
