@@ -2,8 +2,24 @@
     .dashboard-container {
         .dash-side {
             min-height: 100vh;
-            border-right: 1px solid #a7a7a7;
+            border-right: 1px solid #626262;
             background: #202123;
+            .copy {
+                .user {
+                    border-bottom: 1px solid #343434;
+                    padding: 15px;
+                }
+                button {
+                    width: 100%;
+                    color: #fff;
+                    border-color: #343434;
+                    border-right: 0;
+                    border-left: 0;
+                    border-bottom: 0;
+                    border-radius: 0;
+                    padding: 15px;
+                }
+            }
             form {
                 display: flex;
                 flex-wrap: wrap;
@@ -38,9 +54,10 @@
             }
             .ql-container.ql-snow {
                 min-height: 40vh;
+                border-color: #626262 !important;
             }
             .ql-toolbar.ql-snow {
-                border-color: #a7a7a7 !important;
+                border-color: #626262 !important;
                 span, svg  {
                     color: #fff;
                     fill: #fff;
@@ -55,6 +72,34 @@
                     }
                     
                 }
+            }
+
+            .search-bar {
+                input {
+                    width: 100%;
+                }
+                button {
+                    position: absolute;
+                    right: 0;
+                    border: none;
+                    outline: none;
+                    width: fit-content;
+                    min-width: unset;
+                    top: 10px;
+                }
+            }
+        }
+    }
+}
+
+@media only screen and (min-width: 992px) {
+    .dashboard {
+        .dashboard-container {
+            .dash-side {
+                width: 20%;
+            }
+            .dash-main {
+                width: 80%;
             }
         }
     }

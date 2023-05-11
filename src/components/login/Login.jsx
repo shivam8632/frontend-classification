@@ -39,7 +39,7 @@ function Login() {
     <div className='login auth'>
         <Container>
             <div className="auth-container">
-            <h3 className='mb-4'>Sign In</h3>
+            <h3 className='mb-4 text-white'>Sign In</h3>
             <form>
                 <div className="input-container">
                     <label htmlFor="">Email</label>

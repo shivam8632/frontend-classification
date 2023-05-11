@@ -1,50 +1,35 @@
 import React, {useState, useContext} from 'react';
-import axios from 'axios';
-import { API } from '../../config/Api';
 import UserContext from '../context/UserContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMessage } from "@fortawesome/free-solid-svg-icons";
 
 function Copy() {
-    const [primaryInput, setPrimaryInput] = useState('');
-    const [loading, setLoading] = useState(false);
-    const {setText, token} = useContext(UserContext)
+    const {label} = useContext(UserContext)
 
-    const getContent = (e) => {
-        setLoading(true);
-        e.preventDefault();
-        axios.post(API.BASE_URL + 'generate/', {
-            user_id: 1,
-            input: primaryInput
-        }, {
-            headers: {
-            Authorization: `Bearer ${localStorage.getItem("Token")}`
-        }})
-        .then(function (response) {
-            console.log("Data", response);
-            setText(response.data.output)
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
-        .finally(() => setLoading(false));
-    }
+    console.log("label", label)
   return (
-    <div className="copy" id="left-tabs-example">
-        {loading && <div className='loader'><span></span></div>}
-        <form action="">
-            <div className="input-container w-100">
-                <label htmlFor="">Primary Keyword</label>
-                <input type="text" placeholder='AI writing assistant' value={primaryInput} onChange={(e) => {setPrimaryInput(e.target.value)}} />
-            </div>
-            <div className="input-container w-100">
-                <label htmlFor="">Upload a File</label>
-                <input type="file" accept=".doc,.docx,.xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
-            </div>
-            <div className="input-container">
-                <label htmlFor="">Enter a URL</label>
-                <input type='url' placeholder='URL for Scraping Data' />
-            </div>
-            <button type='button' className='button button-fill' onClick={(e) => {getContent(e)}}>Start Writing</button>
-        </form>
+    <div className="copy d-flex h-100 flex-column justify-content-between" id="left-tabs-example">
+        <p className='text-white user'>Welcome, <strong>User</strong></p>
+        {label?.length > 0 ? (
+            <ul className='p-4'>
+                {label?.map((text) => {
+                    return(
+                        <li className='text-white d-flex align-items-center mb-4' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}> <FontAwesomeIcon 
+                        icon={faMessage}
+                        style={{
+                            color: "#fff",
+                            width: "15px",
+                            height: "15px",
+                            marginRight: 10
+                        }}
+                        /> {text}</li>
+                    )
+                })}
+            </ul>
+        ) : (<p className='mb-0 d-flex h-100 justify-content-center align-items-center fs-6' style={{color: '#6c6c72'}}>No Search History</p>)}
+        <div className="logout mt-auto">
+            <button type='button' className='button'>Logout</button>
+        </div>
     </div>
   )
 }

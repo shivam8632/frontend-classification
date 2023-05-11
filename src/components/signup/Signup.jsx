@@ -56,7 +56,7 @@ function Signup() {
     <div className='signup auth'>
         <Container>
             <div className="auth-container">
-                <h3 className='mb-4'>Sign Up</h3>
+                <h3 className='mb-4 text-white'>Sign Up</h3>
                 <form className='d-flex flex-wrap justify-content-between'>
                 <div className="input-container">
                     <label htmlFor="">First Name</label>
