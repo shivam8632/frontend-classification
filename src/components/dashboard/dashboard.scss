@@ -1,0 +1,61 @@
+.dashboard {
+    .dashboard-container {
+        .dash-side {
+            min-height: 100vh;
+            border-right: 1px solid #a7a7a7;
+            background: #202123;
+            form {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                .input-container {
+                    color: #fff;
+                    &:nth-child(1), &:nth-child(2) {
+                        width: 47%;
+                    }
+                    label {
+                        font-size: 13px;
+                        color: #fff;
+                    }
+                    select, input {
+                        border-radius: 40px;
+                        padding: 10px 15px;
+                        border-color: #bfbfbf;
+                        font-size: 14px;
+                    }
+                }
+                button {
+                    color: #fff;
+                    border-color: #fff;
+                }
+            }
+        }
+        .dash-main {
+            min-height: 100vh;
+            background: #343541;
+            p {
+                color: #fff;
+            }
+            .ql-container.ql-snow {
+                min-height: 40vh;
+            }
+            .ql-toolbar.ql-snow {
+                border-color: #a7a7a7 !important;
+                span, svg  {
+                    color: #fff;
+                    fill: #fff;
+                }
+                polygon, path, line, polyline {
+                    stroke: #fff;
+                }
+
+                span.span.ql-color.ql-picker.ql-color-picker {
+                    line, polyline {
+                        stroke: inherit;
+                    }
+                    
+                }
+            }
+        }
+    }
+}
