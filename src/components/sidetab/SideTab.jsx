@@ -4,14 +4,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMessage } from "@fortawesome/free-solid-svg-icons";
 import axios from 'axios';
 import { API } from '../../config/Api';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function Copy() {
-    const {label, setText} = useContext(UserContext)
+    const {label, setText, token} = useContext(UserContext)
     const [URL, setUrl] = useState('')
     console.log("label", label)
     const user =  localStorage.getItem("User_name")
     const checkAdmin = localStorage.getItem("Check_is_admin")
-    console.log("checkAdmin", checkAdmin)
+    console.log("checkAdmin", checkAdmin);
+    const navigate = useNavigate();
 
     const handleScrapping = () => {
         axios.post(API.BASE_URL + 'adminscrapping/', {
@@ -20,6 +23,23 @@ function Copy() {
         .then(function (response) {
             console.log("Scrapping", response);
             setText(response.data.data)
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+    }
+    const handleLogout = () => {
+        axios.post(API.BASE_URL + 'logout/', {
+            url: URL,
+        }, {
+            headers: {
+            Authorization: `Bearer ${token}`
+        }})
+        .then(function (response) {
+            console.log("Logout", response);
+            localStorage.clear();
+            toast.success("User logged out")
+            navigate('/');
         })
         .catch(function (error) {
             console.log(error);
@@ -61,7 +81,7 @@ function Copy() {
             </div>
         )}
         <div className="logout mt-auto">
-            <button type='button' className='button'>Logout</button>
+            <button type='button' className='button' onClick={() => {handleLogout()}}>Logout</button>
         </div>
     </div>
   )
