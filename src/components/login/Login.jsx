@@ -8,11 +8,13 @@ import axios from 'axios';
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading,setLoading]=useState(false)
     const {setToken} = useContext(UserContext);
 
     const navigate = useNavigate();
 
     const handleLogin = () => {
+        setLoading(true)
         axios.post(API.BASE_URL + 'login/', {
             email: email,
             password: password,
@@ -30,6 +32,7 @@ function Login() {
                 console.log("UserProfile", response);
                 localStorage.setItem("User_name", response.data.firstname)
                 localStorage.setItem("Check_is_admin", response.data.is_admin)
+                localStorage.setItem("User_ID", response.data.id)
                 navigate('/dashboard')
             })
             .catch(function (error) {
@@ -42,10 +45,14 @@ function Login() {
                 toast.warn(error.response.data.message)
             }
         })
+        .finally(()=>setLoading(false))
     }
   return (
     <div className='login auth'>
         <Container>
+        {loading && 
+       <div className='loader'><span></span></div>
+        }
             <div className="auth-container">
             <h3 className='mb-4 text-white'>Sign In</h3>
             <form>

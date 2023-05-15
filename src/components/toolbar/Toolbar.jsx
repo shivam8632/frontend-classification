@@ -11,11 +11,16 @@ import { faArr } from "@fortawesome/free-solid-svg-icons";
 
 const RichTextEditor = () => {
   const [comments, setComments] = useState('');
-  const {text} = useContext(UserContext)
+  const {text, setQuestion} = useContext(UserContext)
   const [newText, setNewText] = useState('');
   const [loading, setLoading] = useState(false);
   const [primaryInput, setPrimaryInput] = useState('');
-  const {setText, setLabel} = useContext(UserContext)
+  const {setText, setLabel} = useContext(UserContext);
+  
+  const user_id = localStorage.getItem("User_ID");
+  const formData = new FormData();
+  formData.append('input',primaryInput);
+  formData.append('user_id',user_id);
 
   const modules = {
     toolbar: [
@@ -49,13 +54,23 @@ const RichTextEditor = () => {
   const getContent = (e) => {
     setLoading(true);
     e.preventDefault();
-    axios.post(API.BASE_URL + 'prediction/', {
-        input: primaryInput
-    })
+    axios.post(API.BASE_URL + 'prediction/', formData, {
+      'Content-Type': 'multipart/form-data',
+    },)
     .then(function (response) {
         console.log("Data", response.data);
-        setText(response.data.Answer)
+        setText(response.data.Answer);
         setLabel(prevLabels => [...prevLabels, response.data.Label])
+        axios.post(API.BASE_URL + 'label/', {
+          user_id: user_id,
+      })
+      .then(function (response) {
+          console.log("Questions", response);
+          setQuestion(response.data.data);
+      })
+      .catch(function (error) {
+          console.log(error);
+      })
     })
     .catch(function (error) {
         console.log(error)

@@ -10,9 +10,11 @@ function Signup() {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [password, setPassword] = useState('');
+    const [loading,setLoading]=useState(false);
     const navigate = useNavigate();
 
     const handleSignup = () => {
+        setLoading(true)
         axios.post(API.BASE_URL + 'register/', {
             email: email,
             firstname: firstName,
@@ -48,10 +50,14 @@ function Signup() {
                 toast.warn("An error occurred, please try again later")
             }
         })
+        .finally(()=>setLoading(false))
     }
   return (
     <div className='signup auth'>
         <Container>
+        {loading && 
+       <div className='loader'><span></span></div>
+        }
             <div className="auth-container">
                 <h3 className='mb-4 text-white'>Sign Up</h3>
                 <form className='d-flex flex-wrap justify-content-between'>

@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import UserContext from '../context/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMessage } from "@fortawesome/free-solid-svg-icons";
@@ -8,13 +8,27 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 function Copy() {
-    const {label, setText, token} = useContext(UserContext)
+    const {label, setText, token, questions, setQuestion} = useContext(UserContext)
     const [URL, setUrl] = useState('')
     console.log("label", label)
-    const user =  localStorage.getItem("User_name")
-    const checkAdmin = localStorage.getItem("Check_is_admin")
+    const user =  localStorage.getItem("User_name");
+    const checkAdmin = localStorage.getItem("Check_is_admin");
+    const user_id = localStorage.getItem("User_ID");
     console.log("checkAdmin", checkAdmin);
     const navigate = useNavigate();
+
+    useEffect((() => {
+        axios.post(API.BASE_URL + 'label/', {
+            user_id: user_id,
+        })
+        .then(function (response) {
+            console.log("Questions", response);
+            setQuestion(response.data.data);
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+    }), [])
 
     const handleScrapping = () => {
         axios.post(API.BASE_URL + 'adminscrapping/', {
@@ -29,9 +43,7 @@ function Copy() {
         })
     }
     const handleLogout = () => {
-        axios.post(API.BASE_URL + 'logout/', {
-            url: URL,
-        }, {
+        axios.post(API.BASE_URL + 'logout/', {}, {
             headers: {
             Authorization: `Bearer ${token}`
         }})
@@ -49,9 +61,9 @@ function Copy() {
     <div className="copy d-flex h-100 flex-column justify-content-between" id="left-tabs-example">
         <p className='text-white user'>Welcome, <strong>{user? user : 'User'}</strong></p>
         {checkAdmin != 'true' ? (
-            label?.length > 0 ? (
+            questions?.length > 0 ? (
                 <ul className='p-4'>
-                    {label?.map((text) => {
+                    {questions?.map((text) => {
                         return(
                             <li className='text-white d-flex align-items-center mb-4' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}> <FontAwesomeIcon 
                             icon={faMessage}
@@ -61,7 +73,7 @@ function Copy() {
                                 height: "15px",
                                 marginRight: 10
                             }}
-                            /> {text}</li>
+                            /> {text.label}</li>
                         )
                     })}
                 </ul>
