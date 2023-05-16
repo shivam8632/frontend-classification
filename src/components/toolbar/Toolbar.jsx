@@ -61,16 +61,14 @@ const RichTextEditor = () => {
         console.log("Data", response.data);
         setText(response.data.Answer);
         setLabel(prevLabels => [...prevLabels, response.data.Label])
-        axios.post(API.BASE_URL + 'label/', {
-          user_id: user_id,
-      })
-      .then(function (response) {
-          console.log("Questions", response);
-          setQuestion(response.data.data);
-      })
-      .catch(function (error) {
-          console.log(error);
-      })
+        axios.get(API.BASE_URL + 'label/' + user_id)
+        .then(function (response) {
+            console.log("Questions", response);
+            setQuestion(response.data.labels);
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
     })
     .catch(function (error) {
         console.log(error)
