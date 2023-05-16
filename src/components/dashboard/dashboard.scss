@@ -26,6 +26,13 @@
                         margin-top: 15px;
                     }
                 }
+                ul {
+                    max-height: 78vh;
+                    overflow-y: scroll;
+                    &::-webkit-scrollbar {
+                        display: none;
+                    }
+                }
             }
             form {
                 display: flex;

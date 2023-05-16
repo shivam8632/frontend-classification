@@ -18,12 +18,10 @@ function Copy() {
     const navigate = useNavigate();
 
     useEffect((() => {
-        axios.post(API.BASE_URL + 'label/', {
-            user_id: user_id,
-        })
+        axios.get(API.BASE_URL + 'label/' + user_id)
         .then(function (response) {
             console.log("Questions", response);
-            setQuestion(response.data.data);
+            setQuestion(response.data.labels);
         })
         .catch(function (error) {
             console.log(error);
@@ -73,7 +71,7 @@ function Copy() {
                                 height: "15px",
                                 marginRight: 10
                             }}
-                            /> {text.label}</li>
+                            /> {text}</li>
                         )
                     })}
                 </ul>
