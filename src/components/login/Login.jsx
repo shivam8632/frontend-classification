@@ -47,6 +47,7 @@ function Login() {
         })
         .finally(()=>setLoading(false))
     }
+    
   return (
     <div className='login auth'>
         <Container>
@@ -55,7 +56,11 @@ function Login() {
         }
             <div className="auth-container">
             <h3 className='mb-4 text-white'>Sign In</h3>
-            <form>
+            <form onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                handleLogin(e);
+                }
+            }}>
                 <div className="input-container">
                     <label htmlFor="">Email</label>
                     <input type="email" placeholder='Enter your email' value={email} onChange={(e) => {setEmail(e.target.value)}} />
@@ -69,11 +74,6 @@ function Login() {
                     <span className='mx-md-4'>or</span>
                     <Link to='/signup'>Sign up</Link>
                 </div>
-                {/* <span className='mt-4 line'></span>
-                <div className="buttons w-100 mt-4">
-                    <button className='button'><img src={Google} alt='google' /> Sign in with Google</button>
-                    <button className='button'><img src={Outlook} alt='outlook' /> Sign in with Outlook</button>
-                </div> */}
             </form>
             </div>
             <footer><p className='text-white text-center mt-4'>© 2022-2023 License, Chatbot. All rights reserved</p></footer>

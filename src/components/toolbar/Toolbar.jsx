@@ -6,8 +6,6 @@ import { Container } from 'react-bootstrap';
 import UserContext from '../context/UserContext';
 import axios from 'axios';
 import { API } from '../../config/Api';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArr } from "@fortawesome/free-solid-svg-icons";
 
 const RichTextEditor = () => {
   const [comments, setComments] = useState('');
@@ -64,7 +62,8 @@ const RichTextEditor = () => {
         axios.get(API.BASE_URL + 'label/' + user_id)
         .then(function (response) {
             console.log("Questions", response);
-            setQuestion(response.data.labels);
+            const filteredLabels = response.data.labels.filter(label => label !== "");
+            setQuestion(filteredLabels);
         })
         .catch(function (error) {
             console.log(error);
@@ -74,7 +73,13 @@ const RichTextEditor = () => {
         console.log(error)
     })
     .finally(() => setLoading(false))
-}
+  }
+  
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      getContent(e);
+    }
+  };
   
   return (
       <Container className='d-flex flex-column justify-content-between' style={{height: '95vh'}}>
@@ -89,7 +94,7 @@ const RichTextEditor = () => {
             value={newText}
         />
         <div className="search-bar input-container w-100 position-relative">
-          <input type="text" placeholder='AI writing assistant' value={primaryInput} onChange={(e) => {setPrimaryInput(e.target.value)}} />
+          <input type="text" placeholder='AI writing assistant' value={primaryInput} onChange={(e) => {setPrimaryInput(e.target.value)}} onKeyDown={handleKeyPress} />
           <button type='button' className='button button-fill' onClick={(e) => {getContent(e)}}>
             <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
           </button>

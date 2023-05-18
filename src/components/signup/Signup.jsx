@@ -60,7 +60,11 @@ function Signup() {
         }
             <div className="auth-container">
                 <h3 className='mb-4 text-white'>Sign Up</h3>
-                <form className='d-flex flex-wrap justify-content-between'>
+                <form className='d-flex flex-wrap justify-content-between' onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        handleSignup(e);
+                    }
+                }}>
                 <div className="input-container">
                     <label htmlFor="">First Name</label>
                     <input type="text" placeholder='Enter your First Name' value={firstName} onChange={(e) => {setFirstName(e.target.value)}} />

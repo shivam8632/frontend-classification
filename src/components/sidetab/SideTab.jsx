@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 function Copy() {
     const {label, setText, token, questions, setQuestion} = useContext(UserContext)
     const [URL, setUrl] = useState('')
+    const [loading, setLoading] = useState(false);
     console.log("label", label)
     const user =  localStorage.getItem("User_name");
     const checkAdmin = localStorage.getItem("Check_is_admin");
@@ -21,7 +22,8 @@ function Copy() {
         axios.get(API.BASE_URL + 'label/' + user_id)
         .then(function (response) {
             console.log("Questions", response);
-            setQuestion(response.data.labels);
+            const filteredLabels = response.data.labels.filter(label => label !== "");
+            setQuestion(filteredLabels);
         })
         .catch(function (error) {
             console.log(error);
@@ -29,17 +31,29 @@ function Copy() {
     }), [])
 
     const handleScrapping = () => {
-        axios.post(API.BASE_URL + 'adminscrapping/', {
-            url: URL,
+        const formData = new FormData();
+        formData.append('url', URL);
+        setLoading(true);
+        axios.post(API.BASE_URL + 'adminscrapping/', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         })
         .then(function (response) {
-            console.log("Scrapping", response);
-            setText(response.data.data)
+        console.log("Scrapping", response);
+        setText('');
+        setText(response.data.data);
         })
         .catch(function (error) {
-            console.log(error);
+        console.log(error);
         })
-    }
+        .finally(() => setLoading(false))
+    };
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleScrapping();
+        }
+      };
     const handleLogout = () => {
         axios.post(API.BASE_URL + 'logout/', {}, {
             headers: {
@@ -57,6 +71,7 @@ function Copy() {
     }
   return (
     <div className="copy d-flex h-100 flex-column justify-content-between" id="left-tabs-example">
+        {loading && <div className='loader'><span></span></div>}
         <p className='text-white user'>Welcome, <strong>{user? user : 'User'}</strong></p>
         {checkAdmin != 'true' ? (
             questions?.length > 0 ? (
@@ -80,13 +95,13 @@ function Copy() {
             <div className='input-list' style={{padding: 15}}>
                 <div className="input-container">
                     <label className='text-white mb-3'>URL Scrapping</label>
-                    <input className='w-100' type="url" placeholder='Enter a URL' onChange={(e) => {setUrl(e.target.value)}} />
+                    <input className='w-100' type="url" placeholder='Enter a URL' onChange={(e) => {setUrl(e.target.value)}} onKeyDown={handleKeyPress} />
                 </div>
                 <button type='button' className='scrap' onClick={() => handleScrapping()}>Enter</button>
                 <div className="input-container mt-4">
-                    <label className='text-white mb-3'>Upload Video</label>
+                    <label className='text-white mb-3'>Upload</label>
                     <input className='w-100 text-white' type="file" accept="image/*, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
-                <button type='button' className='scrap' onClick={() => handleScrapping()}>Upload Video</button>
+                <button type='button' className='scrap' onClick={() => handleScrapping()}>Upload</button>
                 </div>
             </div>
         )}

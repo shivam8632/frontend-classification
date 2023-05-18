@@ -3,7 +3,7 @@ import React, {useState} from "react";
 const UserContext = React.createContext();
 
 export const AuthProvider = ({children})=>{
-    const [text, setText] = useState([]);
+    const [text, setText] = useState('');
     const [token, setToken] = useState('');
     const [label, setLabel] = useState([]);
     const [questions, setQuestion] = useState([]);
