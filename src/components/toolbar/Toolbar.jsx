@@ -9,7 +9,7 @@ import { API } from '../../config/Api';
 
 const RichTextEditor = () => {
   const [comments, setComments] = useState('');
-  const {text, setQuestion} = useContext(UserContext)
+  const {text, setQuestion, message} = useContext(UserContext)
   const [newText, setNewText] = useState('');
   const [loading, setLoading] = useState(false);
   const [primaryInput, setPrimaryInput] = useState('');
@@ -80,6 +80,8 @@ const RichTextEditor = () => {
       getContent(e);
     }
   };
+
+  console.log("Toolbar", message)
   
   return (
       <Container className='d-flex flex-column justify-content-between' style={{height: '95vh'}}>
@@ -91,7 +93,7 @@ const RichTextEditor = () => {
             onChange={(content, delta, source, editor) => {
             setComments(text !=null || "" ? text : editor.getHTML());
             }}
-            value={newText}
+            value={message && message.length > 0 ? message.join("</br>") : newText}
         />
         <div className="search-bar input-container w-100 position-relative">
           <input type="text" placeholder='AI writing assistant' value={primaryInput} onChange={(e) => {setPrimaryInput(e.target.value)}} onKeyDown={handleKeyPress} />

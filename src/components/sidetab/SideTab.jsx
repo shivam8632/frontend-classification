@@ -8,15 +8,18 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 function Copy() {
-    const {label, setText, token, questions, setQuestion, text} = useContext(UserContext)
+    const {label, setText, token, questions, setQuestion, text, message, setMessage} = useContext(UserContext)
     const [URL, setUrl] = useState('')
     const [loading, setLoading] = useState(false);
+    const [fileCheck, setFileCheck] = useState('')
     console.log("label", label)
     const user =  localStorage.getItem("User_name");
     const checkAdmin = localStorage.getItem("Check_is_admin");
     const user_id = localStorage.getItem("User_ID");
     console.log("checkAdmin", checkAdmin);
     const navigate = useNavigate();
+    const formData = new FormData();
+    formData.append("aligned_qa_pairs", fileCheck)
 
     useEffect((() => {
         axios.get(API.BASE_URL + 'label/' + user_id)
@@ -42,9 +45,8 @@ function Copy() {
         })
           .then(function (response) {
             console.log("Scrapping", response);
-            console.log("Text1", text);
+            setMessage('')
             setText(response.data.data);
-            console.log("Text2", text);
           })
           .catch(function (error) {
             console.log(error);
@@ -52,14 +54,15 @@ function Copy() {
           .finally(() => setLoading(false));
       };
       
-      useEffect(() => {
-        console.log("Text in useEffect", text);
-      }, [text]);
+    useEffect(() => {
+    console.log("Text in useEffect", text);
+    }, [text]);
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             handleScrapping();
         }
-      };
+    };
+
     const handleLogout = () => {
         axios.post(API.BASE_URL + 'logout/', {}, {
             headers: {
@@ -75,6 +78,25 @@ function Copy() {
             console.log(error);
         })
     }
+
+    const getFileContent = (e) => {
+        setLoading(true);
+        e.preventDefault();
+        axios.post(API.BASE_URL + 'pdfreader/', formData, {
+          'Content-Type': 'multipart/form-data',
+        },)
+        .then(function (response) {
+            setMessage('');
+            setText('');
+            console.log("Data", response);
+            setMessage(response.data.message)
+        })
+        .catch(function (error) {
+            console.log(error)
+        })
+        .finally(() => setLoading(false))
+      }
+
   return (
     <div className="copy d-flex h-100 flex-column justify-content-between" id="left-tabs-example">
         {loading && <div className='loader'><span></span></div>}
@@ -106,8 +128,8 @@ function Copy() {
                 <button type='button' className='scrap' onClick={() => handleScrapping()}>Enter</button>
                 <div className="input-container mt-4">
                     <label className='text-white mb-3'>Upload</label>
-                    <input className='w-100 text-white' type="file" accept="image/*, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
-                <button type='button' className='scrap' onClick={() => handleScrapping()}>Upload</button>
+                    <input className='w-100 text-white' type="file" accept="image/*, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, application/pdf" onChange={(e) => {setFileCheck(e.target.value)}} value={fileCheck} />
+                <button type='button' className='scrap' onClick={(e) => getFileContent(e)}>Upload</button>
                 </div>
             </div>
         )}
