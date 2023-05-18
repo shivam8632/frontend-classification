@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 function Copy() {
-    const {label, setText, token, questions, setQuestion} = useContext(UserContext)
+    const {label, setText, token, questions, setQuestion, text} = useContext(UserContext)
     const [URL, setUrl] = useState('')
     const [loading, setLoading] = useState(false);
     console.log("label", label)
@@ -31,6 +31,7 @@ function Copy() {
     }), [])
 
     const handleScrapping = () => {
+        setText('');
         const formData = new FormData();
         formData.append('url', URL);
         setLoading(true);
@@ -39,16 +40,21 @@ function Copy() {
             'Content-Type': 'multipart/form-data',
           },
         })
-        .then(function (response) {
-        console.log("Scrapping", response);
-        setText('');
-        setText(response.data.data);
-        })
-        .catch(function (error) {
-        console.log(error);
-        })
-        .finally(() => setLoading(false))
-    };
+          .then(function (response) {
+            console.log("Scrapping", response);
+            console.log("Text1", text);
+            setText(response.data.data);
+            console.log("Text2", text);
+          })
+          .catch(function (error) {
+            console.log(error);
+          })
+          .finally(() => setLoading(false));
+      };
+      
+      useEffect(() => {
+        console.log("Text in useEffect", text);
+      }, [text]);
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             handleScrapping();
