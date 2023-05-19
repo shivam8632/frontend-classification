@@ -13,13 +13,18 @@ function Copy() {
     const [loading, setLoading] = useState(false);
     const [fileCheck, setFileCheck] = useState('')
     console.log("label", label)
+    console.log("FIle", fileCheck)
+
     const user =  localStorage.getItem("User_name");
     const checkAdmin = localStorage.getItem("Check_is_admin");
     const user_id = localStorage.getItem("User_ID");
     console.log("checkAdmin", checkAdmin);
     const navigate = useNavigate();
-    const formData = new FormData();
-    formData.append("aligned_qa_pairs", fileCheck)
+    // const formData = new FormData();
+    // formData.append("pdf", fileCheck)
+    const handleFileChange = (e) => {
+        setFileCheck(e.target.files[0]);
+    };
 
     useEffect((() => {
         axios.get(API.BASE_URL + 'label/' + user_id)
@@ -79,23 +84,28 @@ function Copy() {
         })
     }
 
-    const getFileContent = (e) => {
+    const getFileContent = () => {
         setLoading(true);
-        e.preventDefault();
+    
+        const formData = new FormData();
+        formData.append('pdf', fileCheck);
+    
         axios.post(API.BASE_URL + 'pdfresult/', formData, {
-          'Content-Type': 'multipart/form-data',
-        },)
-        .then(function (response) {
-            setMessage('');
-            setText('');
-            console.log("Data", response);
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+          .then(function (response) {
+            console.log('Data', response);
             setMessage(response.data.message)
-        })
-        .catch(function (error) {
-            console.log(error)
-        })
-        .finally(() => setLoading(false))
-      }
+            
+          })
+          .catch(function (error) {
+            console.log(error);
+          })
+          .finally(() => setLoading(false));
+      };
+    
 
   return (
     <div className="copy d-flex h-100 flex-column justify-content-between" id="left-tabs-example">
@@ -128,8 +138,13 @@ function Copy() {
                 <button type='button' className='scrap' onClick={() => handleScrapping()}>Enter</button>
                 <div className="input-container mt-4">
                     <label className='text-white mb-3'>Upload</label>
-                    <input className='w-100 text-white' type="file" accept="image/*, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, application/pdf" onChange={(e) => {setFileCheck(e.target.value)}} value={fileCheck} />
-                <button type='button' className='scrap' onClick={(e) => getFileContent(e)}>Upload</button>
+                    <input
+                        className='w-100 text-white'
+                        type="file"
+                        accept="image/*, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, application/pdf"
+                        onChange={handleFileChange}
+                    />
+                <button type='button' className='scrap' onClick={getFileContent}>Upload</button>
                 </div>
             </div>
         )}
