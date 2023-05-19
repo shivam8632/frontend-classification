@@ -29,7 +29,7 @@ const RichTextEditor = () => {
       [{ 'align': [] }],
       [{ 'color': [] }, { 'background': [] }],
       ['clean']
-    ]
+    ],
   };
 
   const formats = [
@@ -80,11 +80,10 @@ const RichTextEditor = () => {
       getContent(e);
     }
   };
-
-  console.log("Toolbar", message)
+  
   
   return (
-      <Container className='d-flex flex-column justify-content-between' style={{height: '95vh'}}>
+      <Container className='d-flex flex-column justify-content-between' style={{height: '95vh', minHeight: '95%'}}>
         {loading && <div className='loader'><span></span></div>}
         <ReactQuill
             theme="snow"

@@ -70,24 +70,49 @@
                 min-height: 40vh;
                 max-height: 50vh;
                 border-color: #626262 !important;
+                ul, ol {
+                    li {
+                        &::before {
+                            color: #fff;
+                        }
+                    }
+                }
             }
             .ql-toolbar.ql-snow {
                 border-color: #626262 !important;
-                span, svg  {
-                    color: #fff;
-                    fill: #fff;
-                }
-                polygon, path, line, polyline {
-                    stroke: #fff;
-                }
-
-                span.span.ql-color.ql-picker.ql-color-picker {
-                    line, polyline {
-                        stroke: inherit;
+                span.ql-formats:not(:nth-child(5)) {
+                    span, svg  {
+                        color: #fff;
+                        fill: #fff;
                     }
-                    
+                    polygon, path, line, polyline {
+                        stroke: #fff;
+                    }
+    
+                    span.span.ql-color.ql-picker.ql-color-picker {
+                        line, polyline {
+                            stroke: inherit;
+                        }
+                        
+                    }
+                    .ql-picker-options {
+                        span {
+                            color: initial;
+                        }
+                    }
+                }
+                span.ql-formats:nth-child(5) {
+                    span.ql-picker {
+                        span.ql-picker-label {
+                            svg, line {
+                                stroke: #fff;
+                                fill: #fff;
+                            }
+                        }
+                    }
                 }
             }
+
 
             .search-bar {
                 input {

@@ -82,7 +82,7 @@ function Copy() {
     const getFileContent = (e) => {
         setLoading(true);
         e.preventDefault();
-        axios.post(API.BASE_URL + 'pdfreader/', formData, {
+        axios.post(API.BASE_URL + 'pdfresult/', formData, {
           'Content-Type': 'multipart/form-data',
         },)
         .then(function (response) {

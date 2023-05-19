@@ -11,7 +11,6 @@ function Dashboard() {
                 <SideTab />
             </div>
             <div className="dash-main mt-5 mt-md-0 col-md-8 pt-md-3 px-lg-4">
-                {/* <p className='dash-head w-100 px-3' >New Document</p> */}
                 <RichTextEditor />
             </div>
         </div>
