@@ -49,8 +49,8 @@ function Copy() {
           },
         })
           .then(function (response) {
-            console.log("Scrapping", response);
-            setMessage('')
+            console.log("Scrappingggg", response.data.message);
+            setMessage(response.data.message);
             setText(response.data.data);
           })
           .catch(function (error) {
@@ -109,7 +109,10 @@ function Copy() {
 
   return (
     <div className="copy d-flex h-100 flex-column justify-content-between" id="left-tabs-example">
-        {loading && <div className='loader'><span></span></div>}
+
+{loading && <div className='d-flex loader-container flex-column'><div className='loader'><span></span></div> <p className='text-white'>Processing...</p></div>}
+
+
         <p className='text-white user'>Welcome, <strong>{user? user : 'User'}</strong></p>
         {checkAdmin != 'true' ? (
             questions?.length > 0 ? (

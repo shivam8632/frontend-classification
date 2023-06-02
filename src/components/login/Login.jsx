@@ -41,8 +41,8 @@ function Login() {
         })
         .catch(function (error) {
             console.log(error);
-            if(error.response.data.message) {
-                toast.warn(error.response.data.message)
+            if(error.message) {
+                toast.warn(error.message)
             }
         })
         .finally(()=>setLoading(false))

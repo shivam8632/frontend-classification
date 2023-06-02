@@ -84,7 +84,8 @@ const RichTextEditor = () => {
   
   return (
       <Container className='d-flex flex-column justify-content-between' style={{height: '95vh', minHeight: '95%'}}>
-        {loading && <div className='loader'><span></span></div>}
+       {loading && <div className='d-flex loader-container flex-column'><div className='loader'><span></span></div> <p className='text-white'>Processing...</p></div>}
+       
         <ReactQuill
             theme="snow"
             modules={modules}
