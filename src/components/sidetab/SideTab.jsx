@@ -6,12 +6,18 @@ import axios from 'axios';
 import { API } from '../../config/Api';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import {
+    MDBTabs,
+    MDBTabsItem,
+    MDBTabsLink,
+    MDBTabsContent,
+    MDBTabsPane
+  } from 'mdb-react-ui-kit';
 
 function Copy() {
-    const {label, setText, token, questions, setQuestion, text, message, setMessage} = useContext(UserContext)
-    const [URL, setUrl] = useState('')
+    const {pdfLabel, setPdfLabel, urlHistory, setUrlHistory, setUrlData,label, setText, token, questions, setQuestion, text, message, setMessage, fileCheck, setFileCheck, setPrimaryInput, URL, setUrl} = useContext(UserContext)
     const [loading, setLoading] = useState(false);
-    const [fileCheck, setFileCheck] = useState('')
+    const [basicActive, setBasicActive] = useState('tab1');
     console.log("label", label)
     console.log("FIle", fileCheck)
 
@@ -20,8 +26,13 @@ function Copy() {
     const user_id = localStorage.getItem("User_ID");
     console.log("checkAdmin", checkAdmin);
     const navigate = useNavigate();
-    // const formData = new FormData();
-    // formData.append("pdf", fileCheck)
+    const handleBasicClick = (value) => {
+        if (value === basicActive) {
+          return;
+        }
+    
+        setBasicActive(value);
+    };
     const handleFileChange = (e) => {
         setFileCheck(e.target.files[0]);
     };
@@ -32,6 +43,24 @@ function Copy() {
             console.log("Questions", response);
             const filteredLabels = response.data.labels.filter(label => label !== "");
             setQuestion(filteredLabels);
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+        axios.get(API.BASE_URL + 'urldata/')
+        .then(function (response) {
+            console.log("URL History", response);
+            const filteredLabels = response.data.labels.filter(label => label !== "");
+            setUrlHistory(filteredLabels);
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+        axios.get(API.BASE_URL + 'pdfdata/')
+        .then(function (response) {
+            console.log("PDF Label", response);
+            const filteredLabels = response.data.labels.filter(label => label.pdf_filename !== null || "");
+            setPdfLabel(filteredLabels);
         })
         .catch(function (error) {
             console.log(error);
@@ -49,8 +78,9 @@ function Copy() {
           },
         })
           .then(function (response) {
+            setPrimaryInput('');
             console.log("Scrappingggg", response.data.message);
-            setMessage(response.data.message);
+            setUrlData(response.data.message);
             setText(response.data.data);
           })
           .catch(function (error) {
@@ -89,6 +119,7 @@ function Copy() {
     
         const formData = new FormData();
         formData.append('pdf', fileCheck);
+        setPrimaryInput('');
     
         axios.post(API.BASE_URL + 'pdfresult/', formData, {
             headers: {
@@ -98,6 +129,15 @@ function Copy() {
           .then(function (response) {
             console.log('Data', response);
             setMessage(response.data.message)
+            axios.get(API.BASE_URL + 'pdfdata/')
+            .then(function (response) {
+                console.log("PDF Label", response);
+                // const filteredLabels = response.data.labels.filter(label => label !== "");
+                // setQuestion(filteredLabels);
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
             
           })
           .catch(function (error) {
@@ -105,6 +145,7 @@ function Copy() {
           })
           .finally(() => setLoading(false));
       };
+      console.log("URLHOSTORY", urlHistory)
     
 
   return (
@@ -133,12 +174,41 @@ function Copy() {
                 </ul>
             ) : (<p className='mb-0 d-flex h-100 justify-content-center align-items-center fs-6' style={{color: '#6c6c72'}}>No Search History</p>)
         ) : (
-            <div className='input-list' style={{padding: 15}}>
+            <>
+            <MDBTabs className='mb-3'>
+                <MDBTabsItem>
+                <MDBTabsLink onClick={() => handleBasicClick('tab1')} active={basicActive === 'tab1'}>
+                    Tab 1
+                </MDBTabsLink>
+                </MDBTabsItem>
+                <MDBTabsItem>
+                <MDBTabsLink onClick={() => handleBasicClick('tab2')} active={basicActive === 'tab2'}>
+                    Label
+                </MDBTabsLink>
+                </MDBTabsItem>
+                <MDBTabsItem>
+                <MDBTabsLink onClick={() => handleBasicClick('tab3')} active={basicActive === 'tab3'}>
+                    PDF
+                </MDBTabsLink>
+                
+                </MDBTabsItem>
+                <MDBTabsItem>
+                <MDBTabsLink onClick={() => handleBasicClick('tab4')} active={basicActive === 'tab4'}>
+                    URL History
+                </MDBTabsLink>
+                </MDBTabsItem>
+            </MDBTabs>
+            
+
+            <MDBTabsContent>
+                <MDBTabsPane show={basicActive === 'tab1'}>
+                    <div className='input-list' style={{padding: 15}}>
                 <div className="input-container">
                     <label className='text-white mb-3'>URL Scrapping</label>
                     <input className='w-100' type="url" placeholder='Enter a URL' onChange={(e) => {setUrl(e.target.value)}} onKeyDown={handleKeyPress} />
+                    <button type='button' className='scrap' onClick={() => handleScrapping()}>Enter</button>
                 </div>
-                <button type='button' className='scrap' onClick={() => handleScrapping()}>Enter</button>
+                
                 <div className="input-container mt-4">
                     <label className='text-white mb-3'>Upload</label>
                     <input
@@ -150,6 +220,66 @@ function Copy() {
                 <button type='button' className='scrap' onClick={getFileContent}>Upload</button>
                 </div>
             </div>
+                </MDBTabsPane>
+                <MDBTabsPane show={basicActive === 'tab2'}>
+                    <>
+                    
+                        {questions?.length > 0 && (
+                            <ul className='p-4'>
+                                {questions?.map((text) => {
+                                    return(
+                                        <li className='text-white d-flex align-items-center mb-4' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}> <FontAwesomeIcon 
+                                        icon={faMessage}
+                                        style={{
+                                            color: "#fff",
+                                            width: "15px",
+                                            height: "15px",
+                                            marginRight: 10
+                                        }}
+                                        /> {text}</li>
+                                    )
+                                })}
+                            </ul>
+                        )}
+                    
+                    </>
+                </MDBTabsPane>
+                <MDBTabsPane show={basicActive === 'tab3'}>
+                <ul className="p-4">
+                        {pdfLabel?.map((history, i) => {
+                            return(
+                                <li className='text-white d-flex align-items-center mb-4' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}> <FontAwesomeIcon 
+                                        icon={faMessage}
+                                        style={{
+                                            color: "#fff",
+                                            width: "15px",
+                                            height: "15px",
+                                            marginRight: 10
+                                        }}
+                                        />{history.pdf_filename}</li>
+                            )
+                        })}
+                    </ul>
+                </MDBTabsPane>
+                <MDBTabsPane show={basicActive === 'tab4'}>
+                    <ul className="p-4">
+                        {urlHistory?.map((history, i) => {
+                            return(
+                                <li className='text-white d-flex align-items-center mb-4' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}> <FontAwesomeIcon 
+                                        icon={faMessage}
+                                        style={{
+                                            color: "#fff",
+                                            width: "15px",
+                                            height: "15px",
+                                            marginRight: 10
+                                        }}
+                                        />{history.url}</li>
+                            )
+                        })}
+                    </ul>
+                </MDBTabsPane>
+            </MDBTabsContent>
+            </>
         )}
         <div className="logout mt-auto">
             <button type='button' className='button' onClick={() => {handleLogout()}}>Logout</button>

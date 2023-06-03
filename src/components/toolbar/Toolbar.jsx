@@ -9,11 +9,9 @@ import { API } from '../../config/Api';
 
 const RichTextEditor = () => {
   const [comments, setComments] = useState('');
-  const {text, setQuestion, message} = useContext(UserContext)
+  const {setUrlData, urlData, text, setQuestion, message, setMessage, setFileCheck, primaryInput, setPrimaryInput, setText, setLabel, responseFrom, setResponseFrom, URL, setUrl} = useContext(UserContext)
   const [newText, setNewText] = useState('');
   const [loading, setLoading] = useState(false);
-  const [primaryInput, setPrimaryInput] = useState('');
-  const {setText, setLabel} = useContext(UserContext);
   
   const user_id = localStorage.getItem("User_ID");
   const formData = new FormData();
@@ -52,12 +50,19 @@ const RichTextEditor = () => {
   const getContent = (e) => {
     setLoading(true);
     e.preventDefault();
+    setUrl('');
+    setFileCheck('')
+    setMessage('');
+    setUrlData('');
     axios.post(API.BASE_URL + 'prediction/', formData, {
       'Content-Type': 'multipart/form-data',
     },)
     .then(function (response) {
         console.log("Data", response.data);
+        setMessage('');
+        setText('');
         setText(response.data.Answer);
+        setResponseFrom(response.data.AnswerSource)
         setLabel(prevLabels => [...prevLabels, response.data.Label])
         axios.get(API.BASE_URL + 'label/' + user_id)
         .then(function (response) {
@@ -80,12 +85,47 @@ const RichTextEditor = () => {
       getContent(e);
     }
   };
+
+  console.log("Message", message)
   
   
   return (
       <Container className='d-flex flex-column justify-content-between' style={{height: '95vh', minHeight: '95%'}}>
        {loading && <div className='d-flex loader-container flex-column'><div className='loader'><span></span></div> <p className='text-white'>Processing...</p></div>}
-       
+       {
+        message && message.length > 0 ?(
+          <div className="questions-main">
+            {message.map((ques, i) => {
+            return(
+              <div className="questions" key={i}>
+                <input type="checkbox" name="" id="" />
+                <div className="question-text">
+                  <label htmlFor="">{ques[0]}</label>
+                  <p>{ques[1]}</p>
+                </div>
+              </div>
+            )
+          })}
+          </div>
+          
+        )
+        :
+        urlData && urlData.length > 0 ?(
+          <div className="questions-main">
+            {urlData.map((ques, i) => {
+            return(
+              <div className="questions" key={i}>
+                <input type="checkbox" name="" id="" />
+                <div className="question-text">
+                  <label htmlFor="">{ques}</label>
+                </div>
+              </div>
+            )
+          })}
+          </div>
+          
+        )
+        :
         <ReactQuill
             theme="snow"
             modules={modules}
@@ -93,8 +133,11 @@ const RichTextEditor = () => {
             onChange={(content, delta, source, editor) => {
             setComments(text !=null || "" ? text : editor.getHTML());
             }}
-            value={message && message.length > 0 ? message.join("</br>") : newText}
+            value={newText + " " + responseFrom}
         />
+          
+        
+       }
         <div className="search-bar input-container w-100 position-relative">
           <input type="text" placeholder='AI writing assistant' value={primaryInput} onChange={(e) => {setPrimaryInput(e.target.value)}} onKeyDown={handleKeyPress} />
           <button type='button' className='button button-fill' onClick={(e) => {getContent(e)}}>
