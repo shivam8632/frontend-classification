@@ -127,8 +127,8 @@ function Copy() {
             },
           })
           .then(function (response) {
-            console.log('Data', response);
-            setMessage(response.data.message)
+            console.log('PDF Data', response);
+            setMessage(response.data.QA_Pairs)
             axios.get(API.BASE_URL + 'pdfdata/')
             .then(function (response) {
                 console.log("PDF Label", response);

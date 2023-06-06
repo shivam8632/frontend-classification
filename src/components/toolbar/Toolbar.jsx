@@ -11,6 +11,7 @@ const RichTextEditor = () => {
   const [comments, setComments] = useState('');
   const {setUrlData, urlData, text, setQuestion, message, setMessage, setFileCheck, primaryInput, setPrimaryInput, setText, setLabel, responseFrom, setResponseFrom, URL, setUrl} = useContext(UserContext)
   const [newText, setNewText] = useState('');
+  const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   
   const user_id = localStorage.getItem("User_ID");
@@ -86,33 +87,60 @@ const RichTextEditor = () => {
     }
   };
 
-  console.log("Message", message)
+  const handleCheckboxChange = (event, question, answer, label) => {
+    if (event.target.checked) {
+      setSelectedQuestions((prevSelectedQuestions) => [
+        ...prevSelectedQuestions,
+        { question, answer, label }
+      ]);
+    } else {
+      setSelectedQuestions((prevSelectedQuestions) =>
+        prevSelectedQuestions.filter((q) => q.question !== question)
+      );
+    }
+  };
+
+  const handleDataSave = (e) => {
+    axios.post(API.BASE_URL + 'SaveData/', {
+      Response: selectedQuestions,
+    })
+    .then(function (response) {
+        console.log("Save Data", response.data);
+    })
+    .catch(function (error) {
+        console.log(error)
+    })
+  }
+
+  console.log("Message", message);
+  console.log("selectedQuestions", selectedQuestions)
   
   
   return (
       <Container className='d-flex flex-column justify-content-between' style={{height: '95vh', minHeight: '95%'}}>
        {loading && <div className='d-flex loader-container flex-column'><div className='loader'><span></span></div> <p className='text-white'>Processing...</p></div>}
+       <div className="questions-main">
        {
         message && message.length > 0 ?(
-          <div className="questions-main">
-            {message.map((ques, i) => {
+            message.map((ques, i) => {
+              const question = ques?.Question;
+              const answer = ques?.Answer;
+              const label = ques?.Label;
             return(
               <div className="questions" key={i}>
-                <input type="checkbox" name="" id="" />
+                <input type="checkbox" onChange={(event) => handleCheckboxChange(event, question, answer, label)} />
                 <div className="question-text">
-                  <label htmlFor="">{ques[0]}</label>
-                  <p>{ques[1]}</p>
+                  <label htmlFor="">Q. {question}</label>
+                  <p>Ans. {answer}</p>
+                  <p><strong className='text-white'>Label.</strong> {label}</p>
                 </div>
               </div>
             )
-          })}
-          </div>
-          
+          })
         )
         :
         urlData && urlData.length > 0 ?(
-          <div className="questions-main">
-            {urlData.map((ques, i) => {
+            urlData.map((ques, i) => {
             return(
               <div className="questions" key={i}>
                 <input type="checkbox" name="" id="" />
@@ -121,23 +149,30 @@ const RichTextEditor = () => {
                 </div>
               </div>
             )
-          })}
-          </div>
-          
+          })
         )
         :
-        <ReactQuill
-            theme="snow"
-            modules={modules}
-            formats={formats}
-            onChange={(content, delta, source, editor) => {
-            setComments(text !=null || "" ? text : editor.getHTML());
-            }}
-            value={newText + " " + responseFrom}
-        />
+        newText?.length > 0 && (
           
+              <div className="questions">
+                <input type="checkbox" name="" id="" />
+                <div className="question-text d-flex flex-column">
+                  <label htmlFor="">Q. {primaryInput}</label>
+                  <p htmlFor="">Ans. {newText + " " + responseFrom}</p>
+                </div>
+              </div>
+        )
         
        }
+
+</div>
+      {
+        message && message.length > 0 && (
+          <div className="save-content">
+            <button className='save mb-3' onClick={(e) => {handleDataSave(e)}}>Save Data</button>
+          </div>
+        )}
+        
         <div className="search-bar input-container w-100 position-relative">
           <input type="text" placeholder='AI writing assistant' value={primaryInput} onChange={(e) => {setPrimaryInput(e.target.value)}} onKeyDown={handleKeyPress} />
           <button type='button' className='button button-fill' onClick={(e) => {getContent(e)}}>
