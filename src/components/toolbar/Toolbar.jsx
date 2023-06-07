@@ -6,11 +6,11 @@ import { Container } from 'react-bootstrap';
 import UserContext from '../context/UserContext';
 import axios from 'axios';
 import { API } from '../../config/Api';
+import { toast } from 'react-toastify';
 
 const RichTextEditor = () => {
-  const [comments, setComments] = useState('');
-  const {setUrlData, urlData, text, setQuestion, message, setMessage, setFileCheck, primaryInput, setPrimaryInput, setText, setLabel, responseFrom, setResponseFrom, URL, setUrl} = useContext(UserContext)
-  const [newText, setNewText] = useState('');
+  const {setUrlData, urlData, text, setQuestion, message, setMessage, setFileCheck, primaryInput, setPrimaryInput, setText, setLabel, responseFrom, setResponseFrom,newText, setNewText,setPdfData, pdfData, setUrl} = useContext(UserContext)
+  
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   
@@ -18,34 +18,9 @@ const RichTextEditor = () => {
   const formData = new FormData();
   formData.append('input',primaryInput);
   formData.append('user_id',user_id);
-
-  const modules = {
-    toolbar: [
-      [{ 'font': [] }],
-      [{ 'size': ['small', false, 'large', 'huge'] }],
-      ['bold', 'italic', 'underline'],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      [{ 'align': [] }],
-      [{ 'color': [] }, { 'background': [] }],
-      ['clean']
-    ],
-  };
-
-  const formats = [
-    'font',
-    'size',
-    'bold',
-    'italic',
-    'underline',
-    'list',
-    'bullet',
-    'align',
-    'color',
-    'background'
-  ];
   
   useEffect(() => {
-    setNewText(text != null && text.length > 0 ? text : comments)
+    setNewText(text != null && text.length > 0 ? text : '')
   })
 
   const getContent = (e) => {
@@ -55,6 +30,7 @@ const RichTextEditor = () => {
     setFileCheck('')
     setMessage('');
     setUrlData('');
+    setPdfData('')
     axios.post(API.BASE_URL + 'prediction/', formData, {
       'Content-Type': 'multipart/form-data',
     },)
@@ -101,76 +77,104 @@ const RichTextEditor = () => {
   };
 
   const handleDataSave = (e) => {
+    setLoading(true);
     axios.post(API.BASE_URL + 'SaveData/', {
       Response: selectedQuestions,
     })
     .then(function (response) {
         console.log("Save Data", response.data);
+        toast.success('Data Saved Successfully')
     })
     .catch(function (error) {
         console.log(error)
+        toast.error('Error Saving Data')
     })
+    .finally(() => setLoading(false))
   }
 
   console.log("Message", message);
-  console.log("selectedQuestions", selectedQuestions)
+  console.log("selectedQuestions", selectedQuestions);
+  console.log("pdfData", pdfData);
   
   
   return (
       <Container className='d-flex flex-column justify-content-between' style={{height: '95vh', minHeight: '95%'}}>
        {loading && <div className='d-flex loader-container flex-column'><div className='loader'><span></span></div> <p className='text-white'>Processing...</p></div>}
-       <div className="questions-main">
-       {
-        message && message.length > 0 ?(
-            message.map((ques, i) => {
-              const question = ques?.Question;
-              const answer = ques?.Answer;
-              const label = ques?.Label;
-            return(
-              <div className="questions" key={i}>
-                <input type="checkbox" onChange={(event) => handleCheckboxChange(event, question, answer, label)} />
-                <div className="question-text">
-                  <label htmlFor="">Q. {question}</label>
-                  <p>Ans. {answer}</p>
-                  <p><strong className='text-white'>Label.</strong> {label}</p>
+       <div className={message?.length > 0 || urlData?.length > 0 || newText?.length > 0 ? "questions-main" : "questions-main scroll"}>
+        {
+          message && message.length > 0 ?(
+              message.map((ques, i) => {
+                const question = ques?.Question;
+                const answer = ques?.Answer;
+                const label = ques?.Label;
+              return(
+                <div className="questions" key={i}>
+                  <input type="checkbox" onChange={(event) => handleCheckboxChange(event, question, answer, label)} />
+                  <div className="question-text">
+                    <label htmlFor="">Q. {question}</label>
+                    <p>Ans. {answer}</p>
+                    <p><strong className='text-white'>Label.</strong> {label}</p>
+                  </div>
                 </div>
-              </div>
-            )
-          })
-        )
-        :
-        urlData && urlData.length > 0 ?(
-            urlData.map((ques, i) => {
-            return(
-              <div className="questions" key={i}>
-                <input type="checkbox" name="" id="" />
-                <div className="question-text">
-                  <label htmlFor="">{ques}</label>
+              )
+            })
+          )
+          :
+          urlData && urlData.length > 0 ?(
+              urlData.map((ques, i) => {
+              return(
+                <div className="questions" key={i}>
+                  <input type="checkbox" name="" id="" />
+                  <div className="question-text">
+                    <label htmlFor="">{ques}</label>
+                  </div>
                 </div>
+              )
+            })
+          )
+          :
+          newText && newText?.length > 0 && pdfData.length == 0 ? (
+            <div className="questions">
+              <input type="checkbox" onChange={(event) => handleCheckboxChange(event, primaryInput, newText, responseFrom)} />
+              <div className="question-text d-flex flex-column">
+                <label htmlFor="">Q. {primaryInput}</label>
+                <p htmlFor="">Ans. {newText + " " + responseFrom}</p>
               </div>
-            )
-          })
-        )
-        :
-        newText?.length > 0 && (
-          
-              <div className="questions">
-                <input type="checkbox" name="" id="" />
-                <div className="question-text d-flex flex-column">
-                  <label htmlFor="">Q. {primaryInput}</label>
-                  <p htmlFor="">Ans. {newText + " " + responseFrom}</p>
-                </div>
-              </div>
-        )
-        
-       }
-
-</div>
-      {
-        message && message.length > 0 && (
-          <div className="save-content">
-            <button className='save mb-3' onClick={(e) => {handleDataSave(e)}}>Save Data</button>
-          </div>
+            </div>
+          )
+          :
+            pdfData && pdfData?.length > 0 ? (
+              pdfData?.map((data, i) => {
+                return(
+                  <div className="questions">
+                    <div className="question-text d-flex flex-column">
+                      <label htmlFor="">Q. {data.Question.question}</label>
+                      <p htmlFor="">Ans. {data.Answer.answer}</p>
+                    </div>
+                  </div>
+                )
+              })
+            ) :
+            pdfData && pdfData?.message ? (
+              <div className="questions no-data">
+                    <div className="question-text d-flex flex-column">
+                      <label htmlFor="">{pdfData.message}</label>
+                    </div>
+                  </div>
+            ) :
+            (
+            <div className='empty'>
+              <h1>Frontend Classification</h1>
+              <p>Enter your Question</p>
+            </div>
+          )
+        }
+      </div>
+        {
+          message && message.length > 0 || newText && newText.length > 0 && pdfData.length == 0 && (
+            <div className="save-content">
+              <button className='save mb-3' onClick={(e) => {handleDataSave(e)}}>Save Data</button>
+            </div>
         )}
         
         <div className="search-bar input-container w-100 position-relative">

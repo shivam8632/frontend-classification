@@ -51,9 +51,7 @@ function Login() {
   return (
     <div className='login auth'>
         <Container>
-        {loading && 
-       <div className='loader'><span></span></div>
-        }
+        {loading && <div className='d-flex loader-container flex-column'><div className='loader'><span></span></div> <p className='text-white'>Processing...</p></div>}
             <div className="auth-container">
             <h3 className='mb-4 text-white'>Sign In</h3>
             <form onKeyDown={(e) => {

@@ -14,10 +14,12 @@ export const AuthProvider = ({children})=>{
     const [pdfLabel, setPdfLabel] = useState([]);
     const [primaryInput, setPrimaryInput] = useState('');
     const [questions, setQuestion] = useState([]);
+    const [pdfData, setPdfData] = useState([]);
+    const [newText, setNewText] = useState('');
     const [URL, setUrl] = useState('')
 
     return (
-        <UserContext.Provider value={{pdfLabel, setPdfLabel, urlHistory, setUrlHistory, urlData, setUrlData, URL, setUrl, primaryInput, setPrimaryInput, fileCheck, setFileCheck, responseFrom, setResponseFrom, message, setMessage, text, setText, token, setToken, label, setLabel, questions, setQuestion}}>
+        <UserContext.Provider value={{newText, setNewText, pdfData, setPdfData, pdfLabel, setPdfLabel, urlHistory, setUrlHistory, urlData, setUrlData, URL, setUrl, primaryInput, setPrimaryInput, fileCheck, setFileCheck, responseFrom, setResponseFrom, message, setMessage, text, setText, token, setToken, label, setLabel, questions, setQuestion}}>
             {children}
         </UserContext.Provider>
     )

@@ -15,9 +15,10 @@ import {
   } from 'mdb-react-ui-kit';
 
 function Copy() {
-    const {pdfLabel, setPdfLabel, urlHistory, setUrlHistory, setUrlData,label, setText, token, questions, setQuestion, text, message, setMessage, fileCheck, setFileCheck, setPrimaryInput, URL, setUrl} = useContext(UserContext)
+    const {pdfLabel, setPdfLabel, urlHistory, setUrlHistory, setUrlData,label, setText, token, questions, setQuestion, text, message, setMessage,setNewText, fileCheck, setResponseFrom, setFileCheck, setPrimaryInput, URL, setUrl,pdfData, setPdfData} = useContext(UserContext)
     const [loading, setLoading] = useState(false);
     const [basicActive, setBasicActive] = useState('tab1');
+    const [activeId, setActiveId] = useState(null);
     console.log("label", label)
     console.log("FIle", fileCheck)
 
@@ -33,15 +34,16 @@ function Copy() {
     
         setBasicActive(value);
     };
+
     const handleFileChange = (e) => {
         setFileCheck(e.target.files[0]);
     };
 
     useEffect((() => {
-        axios.get(API.BASE_URL + 'label/' + user_id)
+        axios.get(API.BASE_URL + 'label/' + user_id + '/')
         .then(function (response) {
             console.log("Questions", response);
-            const filteredLabels = response.data.labels.filter(label => label !== "");
+            const filteredLabels = response.data.filter(label => label[1] !== "");
             setQuestion(filteredLabels);
         })
         .catch(function (error) {
@@ -87,11 +89,12 @@ function Copy() {
             console.log(error);
           })
           .finally(() => setLoading(false));
-      };
+    };
       
     useEffect(() => {
     console.log("Text in useEffect", text);
     }, [text]);
+
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             handleScrapping();
@@ -144,15 +147,38 @@ function Copy() {
             console.log(error);
           })
           .finally(() => setLoading(false));
-      };
-      console.log("URLHOSTORY", urlHistory)
+    };
+
+    const handleShowData = (id) => {
+        setLoading(true);
+        setPrimaryInput('');
+        setResponseFrom('');
+        setNewText('')
+        setMessage('')
+        axios.post(API.BASE_URL + 'ShowData/', {
+            id: id
+        })
+        .then(function (response) {
+            setPrimaryInput('');
+            setResponseFrom('');
+            setNewText('')
+            setMessage('')
+            console.log("PDF response Data", response.data);
+            setPdfData(response.data)
+        })
+        .catch(function (error) {
+            console.log(error)
+        })
+        .finally(() => setLoading(false))
+    }
+
+    console.log("URLHOSTORY", urlHistory)
+    console.log('Questions Data', questions)
     
 
   return (
     <div className="copy d-flex h-100 flex-column justify-content-between" id="left-tabs-example">
-
-{loading && <div className='d-flex loader-container flex-column'><div className='loader'><span></span></div> <p className='text-white'>Processing...</p></div>}
-
+    {loading && <div className='d-flex loader-container flex-column'><div className='loader'><span></span></div> <p className='text-white'>Processing...</p></div>}
 
         <p className='text-white user'>Welcome, <strong>{user? user : 'User'}</strong></p>
         {checkAdmin != 'true' ? (
@@ -160,15 +186,22 @@ function Copy() {
                 <ul className='p-4'>
                     {questions?.map((text) => {
                         return(
-                            <li className='text-white d-flex align-items-center mb-4' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}> <FontAwesomeIcon 
-                            icon={faMessage}
-                            style={{
-                                color: "#fff",
-                                width: "15px",
-                                height: "15px",
-                                marginRight: 10
-                            }}
-                            /> {text}</li>
+                            <li 
+                            className='text-white d-flex align-items-center mb-4' 
+                            style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}
+                            
+                            >
+                                <FontAwesomeIcon 
+                                    icon={faMessage}
+                                    style={{
+                                        color: "#fff",
+                                        width: "15px",
+                                        height: "15px",
+                                        marginRight: 10
+                                    }}
+                                /> 
+                                {text}
+                            </li>
                         )
                     })}
                 </ul>
@@ -225,10 +258,15 @@ function Copy() {
                     <>
                     
                         {questions?.length > 0 && (
-                            <ul className='p-4'>
+                            <ul className='py-4 px-0'>
                                 {questions?.map((text) => {
+                                    const liClass = text[0] === activeId && pdfData?.length > 0? 'active' : '';
                                     return(
-                                        <li className='text-white d-flex align-items-center mb-4' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}> <FontAwesomeIcon 
+                                        <li
+                                        className={`text-white d-flex align-items-center ${liClass}`}
+                                        style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}
+                                        onClick={() => {setActiveId(text[0]);handleShowData(text[0])}}
+                                        > <FontAwesomeIcon 
                                         icon={faMessage}
                                         style={{
                                             color: "#fff",
@@ -236,7 +274,7 @@ function Copy() {
                                             height: "15px",
                                             marginRight: 10
                                         }}
-                                        /> {text}</li>
+                                        /> {text[1]}</li>
                                     )
                                 })}
                             </ul>
@@ -245,7 +283,7 @@ function Copy() {
                     </>
                 </MDBTabsPane>
                 <MDBTabsPane show={basicActive === 'tab3'}>
-                <ul className="p-4">
+                <ul className="p-0">
                         {pdfLabel?.map((history, i) => {
                             return(
                                 <li className='text-white d-flex align-items-center mb-4' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}> <FontAwesomeIcon 
@@ -262,7 +300,7 @@ function Copy() {
                     </ul>
                 </MDBTabsPane>
                 <MDBTabsPane show={basicActive === 'tab4'}>
-                    <ul className="p-4">
+                    <ul className="p-0">
                         {urlHistory?.map((history, i) => {
                             return(
                                 <li className='text-white d-flex align-items-center mb-4' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}> <FontAwesomeIcon 

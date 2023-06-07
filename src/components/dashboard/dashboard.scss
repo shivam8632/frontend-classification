@@ -16,6 +16,18 @@
                         }
                     }
                 }
+                .tab-content {
+                    ul {
+                        li {
+                            padding: .8rem 2rem;
+                            cursor: pointer;
+                        }
+                        li.active {
+                            background-color: #353536ba;
+                        }
+                    }
+                }
+                
                 .user {
                     border-bottom: 1px solid #343434;
                     padding: 15px;
@@ -100,6 +112,43 @@
                             color: #838383;
                         }
                     }
+                }
+                .questions.no-data {
+                    min-height: 80vh;
+                    align-items: center;
+                    justify-content: center;
+                    width: 100%;
+                    .question-text {
+                        label {
+                            text-align: center;
+                            font-size: 3vw;
+                            color: #6e6e6e;
+                        }
+                    }
+                }
+                .empty {
+                    height: 100%;
+                    min-height: 80vh;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    flex-direction: column;
+                    &::-webkit-scrollbar {
+                        display: none;
+                    }
+                    h1 {
+                        color: #b5b5b5;
+                        font-size: 4vw;
+                        margin-bottom: 15px;
+                    }
+                    p {
+                        font-size: 1.5vw;
+                    }
+                }
+            }
+            .questions-main.scroll {
+                &::-webkit-scrollbar {
+                    display: none;
                 }
             }
             p {
