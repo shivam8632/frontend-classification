@@ -1,7 +1,7 @@
 import React, {useState, useContext, useEffect} from 'react';
 import UserContext from '../context/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMessage, faShareFromSquare } from "@fortawesome/free-solid-svg-icons";
+import { faMessage, faShareFromSquare, faDownload, faShare } from "@fortawesome/free-solid-svg-icons";
 import axios from 'axios';
 import { API } from '../../config/Api';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +19,7 @@ function Copy() {
     const [loading, setLoading] = useState(false);
     const [basicActive, setBasicActive] = useState('tab1');
     const [activeId, setActiveId] = useState(null);
+    const [pdfLink, setPdfLink] = useState([]);
     console.log("label", label)
     console.log("FIle", fileCheck)
 
@@ -43,7 +44,7 @@ function Copy() {
         axios.get(API.BASE_URL + 'label/' + user_id + '/')
         .then(function (response) {
             console.log("Questions", response);
-            const filteredLabels = response.data.filter(label => label[1] !== "");
+            const filteredLabels = response.data.Label_id.filter(label => label[1] !== "");
             setQuestion(filteredLabels);
         })
         .catch(function (error) {
@@ -61,8 +62,10 @@ function Copy() {
         axios.get(API.BASE_URL + 'pdfdata/')
         .then(function (response) {
             console.log("PDF Label", response);
-            const filteredLabels = response.data.labels.filter(label => label.pdf_filename !== null || "");
+            const filteredLabels = response.data.pdffilename.filter(label => label.pdf_filename !== null || "");
             setPdfLabel(filteredLabels);
+            const filteredPdfLink = response.data.pdfdownload.filter(label => label.pdf !== null || "");
+            setPdfLink(filteredPdfLink);
         })
         .catch(function (error) {
             console.log(error);
@@ -174,6 +177,8 @@ function Copy() {
 
     console.log("URLHOSTORY", urlHistory)
     console.log('Questions Data', questions)
+    console.log("pdfLink", pdfLink?.length)
+    console.log("pdfData", pdfLabel?.length)
     
 
   return (
@@ -275,7 +280,17 @@ function Copy() {
                                             height: "15px",
                                             marginRight: 10
                                         }}
-                                        /> {text[1]}</li>
+                                        /> {text[1]}
+                                        <FontAwesomeIcon 
+                                            icon={faShare}
+                                            style={{
+                                                color: "#fff",
+                                                width: "20px",
+                                                height: "20px",
+                                                marginLeft: 'auto'
+                                            }}
+                                        /> 
+                                        </li>
                                     )
                                 })}
                             </ul>
@@ -285,20 +300,45 @@ function Copy() {
                 </MDBTabsPane>
 
                 <MDBTabsPane show={basicActive === 'tab3'}>
-                <ul className="p-0">
-                        {pdfLabel?.map((history, i) => {
-                            return(
-                                <li className='text-white d-flex align-items-center' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}> <FontAwesomeIcon 
+                    <ul className="p-0">
+                        {pdfLabel?.message == "Data Not Found" || pdfLink?.length > 0 ? (
+                            pdfLabel?.map((history, i) => {
+                                return (
+                                <a href={pdfLink[i]?.pdf} download={pdfLink[i]?.pdf} target="_blank" style={{textDecoration: 'none'}}>
+                                    <li className='text-white d-flex align-items-center' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}>
+                                    <FontAwesomeIcon 
                                         icon={faMessage}
                                         style={{
-                                            color: "#fff",
-                                            width: "15px",
-                                            height: "15px",
-                                            marginRight: 10
+                                        color: "#fff",
+                                        width: "15px",
+                                        height: "15px",
+                                        marginRight: 10
                                         }}
-                                        />{history.pdf_filename}</li>
-                            )
-                        })}
+                                    />
+                                    {history.pdf_filename}
+                                    <FontAwesomeIcon 
+                                            icon={faDownload}
+                                            style={{
+                                                color: "#fff",
+                                                width: "20px",
+                                                height: "20px",
+                                                marginLeft: 'auto'
+                                            }}
+                                        /> 
+                                    </li>
+                                </a>
+                                )
+                            })
+                        )
+                        :
+                        <h5
+                        className='d-flex justify-content-center align-items-center text-white'
+                        style={{
+                            minHeight: '70vh',
+                            margin: 0,
+                        }}
+                        >No Pdf Found</h5>
+                    }
                     </ul>
                 </MDBTabsPane>
 
