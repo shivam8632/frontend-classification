@@ -41,10 +41,10 @@ const RichTextEditor = () => {
         setText(response.data.Answer);
         setResponseFrom(response.data.AnswerSource)
         setLabel(prevLabels => [...prevLabels, response.data.Label])
-        axios.get(API.BASE_URL + 'label/' + user_id)
+        axios.get(API.BASE_URL + 'label/' + user_id + '/')
         .then(function (response) {
             console.log("Questions", response);
-            const filteredLabels = response.data.labels.filter(label => label !== "");
+            const filteredLabels = response.data.Label_id.filter(label => label[1] !== "");
             setQuestion(filteredLabels);
         })
         .catch(function (error) {
