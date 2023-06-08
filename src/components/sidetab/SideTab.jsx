@@ -1,7 +1,7 @@
 import React, {useState, useContext, useEffect} from 'react';
 import UserContext from '../context/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMessage } from "@fortawesome/free-solid-svg-icons";
+import { faMessage, faShareFromSquare } from "@fortawesome/free-solid-svg-icons";
 import axios from 'axios';
 import { API } from '../../config/Api';
 import { useNavigate } from 'react-router-dom';
@@ -254,6 +254,7 @@ function Copy() {
                 </div>
             </div>
                 </MDBTabsPane>
+
                 <MDBTabsPane show={basicActive === 'tab2'}>
                     <>
                     
@@ -282,11 +283,12 @@ function Copy() {
                     
                     </>
                 </MDBTabsPane>
+
                 <MDBTabsPane show={basicActive === 'tab3'}>
                 <ul className="p-0">
                         {pdfLabel?.map((history, i) => {
                             return(
-                                <li className='text-white d-flex align-items-center mb-4' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}> <FontAwesomeIcon 
+                                <li className='text-white d-flex align-items-center' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}> <FontAwesomeIcon 
                                         icon={faMessage}
                                         style={{
                                             color: "#fff",
@@ -299,19 +301,34 @@ function Copy() {
                         })}
                     </ul>
                 </MDBTabsPane>
+
                 <MDBTabsPane show={basicActive === 'tab4'}>
                     <ul className="p-0">
                         {urlHistory?.map((history, i) => {
                             return(
-                                <li className='text-white d-flex align-items-center mb-4' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}> <FontAwesomeIcon 
-                                        icon={faMessage}
+                                <a className='url-share' href={history.url} target="_blank" rel="noopener noreferrer">
+                                    <li className='text-white d-block align-items-center' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', width: 325}}> <FontAwesomeIcon 
+                                            icon={faMessage}
+                                            style={{
+                                                color: "#fff",
+                                                width: "15px",
+                                                height: "15px",
+                                                marginRight: 10
+                                            }}
+                                            />
+                                            {history.url}
+                                        
+                                    </li>
+                                    <FontAwesomeIcon 
+                                        icon={faShareFromSquare}
+                                        className='share'
                                         style={{
                                             color: "#fff",
-                                            width: "15px",
-                                            height: "15px",
-                                            marginRight: 10
+                                            width: "20px",
+                                            height: "20px",
                                         }}
-                                        />{history.url}</li>
+                                    /> 
+                                </a>
                             )
                         })}
                     </ul>

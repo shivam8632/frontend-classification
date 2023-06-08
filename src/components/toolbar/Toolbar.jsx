@@ -137,9 +137,10 @@ const RichTextEditor = () => {
             <div className="questions">
               <input type="checkbox" onChange={(event) => handleCheckboxChange(event, primaryInput, newText, responseFrom)} />
               <div className="question-text d-flex flex-column">
+              <h5 style={{color: '#838383'}}>Data From:- <strong style={{fontStyle: 'italic',}}>{responseFrom}</strong></h5>
                 <label htmlFor="">Q. {primaryInput}</label>
                 <p className='my-1'>Ans. {newText}</p>
-                <p style={{color: '#838383'}}>Data From:- <strong style={{fontStyle: 'italic',}}>{responseFrom}</strong></p>
+                
               </div>
             </div>
           )
