@@ -62,9 +62,9 @@ function Copy() {
         axios.get(API.BASE_URL + 'pdfdata/')
         .then(function (response) {
             console.log("PDF Label", response);
-            const filteredLabels = response.data.pdffilename.filter(label => label.pdf_filename !== null || "");
+            const filteredLabels = response.data.pdffilename.filter(label => label !== null || "");
             setPdfLabel(filteredLabels);
-            const filteredPdfLink = response.data.pdfdownload.filter(label => label.pdf !== null || "");
+            const filteredPdfLink = response.data.pdfdownload.filter(label => label !== null || "");
             setPdfLink(filteredPdfLink);
         })
         .catch(function (error) {
@@ -304,7 +304,7 @@ function Copy() {
                         {pdfLabel?.message == "Data Not Found" || pdfLink?.length > 0 ? (
                             pdfLabel?.map((history, i) => {
                                 return (
-                                <a href={pdfLink[i]?.pdf} download={pdfLink[i]?.pdf} target="_blank" style={{textDecoration: 'none'}}>
+                                <a href={pdfLink[i]} download={pdfLink[i]} target="_blank" style={{textDecoration: 'none'}}>
                                     <li className='text-white d-flex align-items-center' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}>
                                     <FontAwesomeIcon 
                                         icon={faMessage}
@@ -315,7 +315,7 @@ function Copy() {
                                         marginRight: 10
                                         }}
                                     />
-                                    {history.pdf_filename}
+                                    {history}
                                     <FontAwesomeIcon 
                                             icon={faDownload}
                                             style={{
