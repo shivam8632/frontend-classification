@@ -138,7 +138,8 @@ const RichTextEditor = () => {
               <input type="checkbox" onChange={(event) => handleCheckboxChange(event, primaryInput, newText, responseFrom)} />
               <div className="question-text d-flex flex-column">
                 <label htmlFor="">Q. {primaryInput}</label>
-                <p htmlFor="">Ans. {newText + " " + responseFrom}</p>
+                <p className='my-1'>Ans. {newText}</p>
+                <p style={{color: '#838383'}}>Data From:- <strong style={{fontStyle: 'italic',}}>{responseFrom}</strong></p>
               </div>
             </div>
           )
@@ -171,7 +172,7 @@ const RichTextEditor = () => {
         }
       </div>
         {
-          message && message.length > 0 || newText && newText.length > 0 && pdfData.length == 0 && (
+          message && message.length > 0 || newText && newText.length > 0 && pdfData.length == 0 && responseFrom == '[Chatgpt Response]' && (
             <div className="save-content">
               <button className='save mb-3' onClick={(e) => {handleDataSave(e)}}>Save Data</button>
             </div>
