@@ -24,7 +24,7 @@ function Login() {
             toast.success("Logged in Successfully!");
             localStorage.setItem("Token",response.data.token.access)
             setToken(localStorage.getItem("Token"))
-            axios.post(API.BASE_URL + 'userprofile/',{}, {
+            axios.post(API.BASE_URL + 'userprofile/', {
                 headers: {
                 Authorization: `Bearer ${localStorage.getItem("Token")}`
             }})

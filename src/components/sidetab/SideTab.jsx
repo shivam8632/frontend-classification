@@ -15,7 +15,7 @@ import {
   } from 'mdb-react-ui-kit';
 
 function Copy() {
-    const {pdfLabel, setPdfLabel, urlHistory, setUrlHistory, setUrlData,label, setText, token, questions, setQuestion, text, message, setMessage,setNewText, fileCheck, setResponseFrom, setFileCheck, setPrimaryInput, URL, setUrl,pdfData, setPdfData} = useContext(UserContext)
+    const {pdfLabel, setPdfLabel, urlHistory, setUrlHistory, setUrlData,label, setText, token, questions, setQuestion, text, message, setMessage,setNewText, fileCheck, setResponseFrom, setFileCheck, setPrimaryInput, URL, setUrl,pdfData, setPdfData, questionId, setQuestionId} = useContext(UserContext)
     const [loading, setLoading] = useState(false);
     const [basicActive, setBasicActive] = useState('tab1');
     const [activeId, setActiveId] = useState(null);
@@ -44,8 +44,8 @@ function Copy() {
         axios.get(API.BASE_URL + 'label/' + user_id + '/')
         .then(function (response) {
             console.log("Questions", response);
-            const filteredLabels = response.data.Label_id.filter(label => label[1] !== "");
-            setQuestion(filteredLabels);
+            setQuestion(response.data.unique_label);
+            setQuestionId(response.data.unique_id)
         })
         .catch(function (error) {
             console.log(error);
@@ -216,7 +216,7 @@ function Copy() {
             <MDBTabs className='mb-3'>
                 <MDBTabsItem>
                 <MDBTabsLink onClick={() => handleBasicClick('tab1')} active={basicActive === 'tab1'}>
-                    Tab 1
+                    Upload
                 </MDBTabsLink>
                 </MDBTabsItem>
                 <MDBTabsItem>
@@ -263,38 +263,47 @@ function Copy() {
                 <MDBTabsPane show={basicActive === 'tab2'}>
                     <>
                     
-                        {questions?.length > 0 && (
+                        {questions?.length > 0 ? (
                             <ul className='py-4 px-0'>
-                                {questions?.map((text) => {
-                                    const liClass = text[0] === activeId && pdfData?.length > 0? 'active' : '';
+                                {questions?.map((text, i) => {
+                                    const liClass = questionId[i] === activeId && pdfData?.length > 0? 'active' : '';
                                     return(
-                                        <li
-                                        className={`text-white d-flex align-items-center ${liClass}`}
-                                        style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}
-                                        onClick={() => {setActiveId(text[0]);handleShowData(text[0])}}
-                                        > <FontAwesomeIcon 
-                                        icon={faMessage}
-                                        style={{
-                                            color: "#fff",
-                                            width: "15px",
-                                            height: "15px",
-                                            marginRight: 10
-                                        }}
-                                        /> {text[1]}
-                                        <FontAwesomeIcon 
-                                            icon={faShare}
-                                            style={{
-                                                color: "#fff",
-                                                width: "20px",
-                                                height: "20px",
-                                                marginLeft: 'auto'
-                                            }}
-                                        /> 
-                                        </li>
+                                        text != '' && (
+                                            <li
+                                                className={`text-white d-flex align-items-center ${liClass}`}
+                                                style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}
+                                                onClick={() => {setActiveId(questionId[i]);handleShowData(questionId[i])}}
+                                                > <FontAwesomeIcon 
+                                                icon={faMessage}
+                                                style={{
+                                                    color: "#fff",
+                                                    width: "15px",
+                                                    height: "15px",
+                                                    marginRight: 10
+                                                }}
+                                            /> {text}
+                                                <FontAwesomeIcon 
+                                                    icon={faShare}
+                                                    style={{
+                                                        color: "#fff",
+                                                        width: "20px",
+                                                        height: "20px",
+                                                        marginLeft: 'auto'
+                                                    }}
+                                                /> 
+                                            </li>
+                                        )
                                     )
                                 })}
                             </ul>
-                        )}
+                        ) :
+                        <h5
+                        className='d-flex justify-content-center align-items-center text-white'
+                        style={{
+                            minHeight: '70vh',
+                            margin: 0,
+                        }}
+                        >No Label Found</h5>}
                     
                     </>
                 </MDBTabsPane>
@@ -344,7 +353,8 @@ function Copy() {
 
                 <MDBTabsPane show={basicActive === 'tab4'}>
                     <ul className="p-0">
-                        {urlHistory?.map((history, i) => {
+                        {urlHistory?.length > 0 ? (
+                        urlHistory?.map((history, i) => {
                             return(
                                 <a className='url-share' href={history.url} target="_blank" rel="noopener noreferrer">
                                     <li className='text-white d-block align-items-center' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', width: 325}}> <FontAwesomeIcon 
@@ -370,7 +380,16 @@ function Copy() {
                                     /> 
                                 </a>
                             )
-                        })}
+                        }))
+                        :
+                        <h5
+                        className='d-flex justify-content-center align-items-center text-white'
+                        style={{
+                            minHeight: '70vh',
+                            margin: 0,
+                        }}
+                        >No URL Found</h5>
+                    }
                     </ul>
                 </MDBTabsPane>
             </MDBTabsContent>
