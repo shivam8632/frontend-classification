@@ -113,6 +113,27 @@ form {
   }
 }
 
+.intro {
+  margin-bottom: 2rem;
+  .buttons {
+    button {
+      width: fit-content !important;
+      background: #343541;
+      padding: 8px !important;
+      font-size: 14px;
+      border: 1px transparent !important;
+      border-radius: 5px !important;
+      &:nth-child(odd) {
+        margin-right: 15px;
+      }
+    }
+    button.selected {
+      background: #24292f;
+      border: 1px solid #fff !important;
+    }
+  }
+}
+
 input, textarea {
   display: flex;
   padding: 10px 15px;

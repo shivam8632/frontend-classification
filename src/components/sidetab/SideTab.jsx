@@ -6,7 +6,6 @@ import axios from 'axios';
 import { API } from '../../config/Api';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import Popup from '../popup/Popup';
 import {
     MDBTabs,
     MDBTabsItem,
@@ -16,7 +15,7 @@ import {
   } from 'mdb-react-ui-kit';
 
 function Copy() {
-    const {pdfLabel, setPdfLabel, urlHistory, setUrlHistory, setUrlData,label, setText, token, questions, setQuestion, text, message, setMessage,setNewText, newText, fileCheck, setResponseFrom, responseFrom, setFileCheck, setPrimaryInput, URL, setUrl,pdfData, setPdfData, questionId, setQuestionId} = useContext(UserContext)
+    const {selectedValue, setSelectedValue, pdfLabel, setPdfLabel, urlHistory, setUrlHistory, setUrlData,label, setText, token, questions, setQuestion, text, message, setMessage,setNewText, newText, fileCheck, setResponseFrom, responseFrom, setFileCheck, setPrimaryInput, URL, setUrl,pdfData, setPdfData, questionId, setQuestionId} = useContext(UserContext)
     const [loading, setLoading] = useState(false);
     const [basicActive, setBasicActive] = useState('tab1');
     const [activeId, setActiveId] = useState(null);
@@ -96,11 +95,11 @@ function Copy() {
           .finally(() => setLoading(false));
     };
 
-    const handleTrainData = (e, dataId) => {
-        setIsSaveVisible(false)
-        setLoading(true);
+    const handleTrainData = (e) => {
+        if(selectedValue != null) {
+            setLoading(true);
         axios.post(API.BASE_URL + 'finaltrainmodel/', {
-            database_id: dataId,
+            database_id: selectedValue,
             })
         .then(function (response) {
             console.log("Train Data", response.data);
@@ -111,7 +110,18 @@ function Copy() {
             toast.error('Error to train data')
         })
         .finally(() => setLoading(false))
+        }
+        else {
+            toast.warn("Please select a database")
+        }
     }
+
+    const handleButtonClick = (value) => {
+        setSelectedValue(value);
+        toast.success("Database" + value + 'selected')
+    };
+
+    console.log("selectedValue" ,selectedValue)
       
     useEffect(() => {
     console.log("Text in useEffect", text);
@@ -204,7 +214,13 @@ function Copy() {
     <div className="copy d-flex h-100 flex-column justify-content-between" id="left-tabs-example">
     {loading && <div className='d-flex loader-container flex-column'><div className='loader'><span></span></div> <p className='text-white'>Processing...</p></div>}
 
-        <p className='text-white user'>Welcome, <strong>{user? user : 'User'}</strong></p>
+        <div className='intro'>
+            <p className='text-white user'>Welcome, <strong>{user? user : 'User'}</strong></p>
+            <div className="buttons d-flex">
+            <button className={selectedValue === 1 ? 'selected' : ''} onClick={() => handleButtonClick(1)}>Database 1</button>
+            <button className={selectedValue === 2 ? 'selected' : ''} onClick={() => handleButtonClick(2)}>Database 2</button>
+            </div>
+        </div>
         {checkAdmin != 'true' ? (
             questions?.length > 0 ? (
                 <ul className='p-4'>
@@ -415,20 +431,9 @@ function Copy() {
             </>
         )}
 
-{
-          (message && message.length > 0 || newText && newText.length > 0 && pdfData.length === 0) && (responseFrom === 'This Response is Coming From Chatgpt 1' || responseFrom === 'This Response is Coming From Chatgpt 2') && (
             <div className="train-content">
-              <button className='save mb-3' onClick={() => setIsSaveVisible(true)}>Train Model</button>
-              {isSaveVisible && 
-              <Popup 
-                onClose={() => setIsSaveVisible(false)} 
-                dataOne={(e) => handleTrainData(e, 1)}
-                dataTwo={(e) => handleTrainData(e, 2)}
-              />
-              }
+              <button className='save mb-3' onClick={() => handleTrainData(true)}>Train Model</button>
             </div>
-          )
-        }
         <div className="logout mt-auto">
             <button type='button' className='button' onClick={() => {handleLogout()}}>Logout</button>
         </div>

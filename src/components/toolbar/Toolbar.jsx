@@ -7,10 +7,9 @@ import UserContext from '../context/UserContext';
 import axios from 'axios';
 import { API } from '../../config/Api';
 import { toast } from 'react-toastify';
-import Popup from '../popup/Popup';
 
 const RichTextEditor = () => {
-  const {setUrlData, urlData, text, setQuestion, message, setMessage, setFileCheck, primaryInput, setPrimaryInput, setText, label, setLabel, responseFrom, setResponseFrom,newText, setNewText,setPdfData, pdfData, setUrl, setQuestionId} = useContext(UserContext)
+  const {selectedValue, setUrlData, urlData, text, setQuestion, message, setMessage, setFileCheck, primaryInput, setPrimaryInput, setText, label, setLabel, responseFrom, setResponseFrom,newText, setNewText,setPdfData, pdfData, setUrl, setQuestionId} = useContext(UserContext)
   
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -24,9 +23,9 @@ const RichTextEditor = () => {
     setNewText(text != null && text.length > 0 ? text : '')
   })
 
-  const getContent = (e, dataId) => {
-    setContentVisible(false);
-    setLoading(true);
+  const getContent = (e) => {
+    if(selectedValue !=null) {
+      setLoading(true);
     e.preventDefault();
     setUrl('');
     setFileCheck('')
@@ -36,7 +35,7 @@ const RichTextEditor = () => {
     const formData = new FormData();
     formData.append('input',primaryInput);
     formData.append('user_id',user_id);
-    formData.append('database_id', dataId)
+    formData.append('database_id', selectedValue)
     axios.post(API.BASE_URL + 'finalprediction/', formData, {
       'Content-Type': 'multipart/form-data',
     },)
@@ -52,12 +51,15 @@ const RichTextEditor = () => {
         console.log(error)
     })
     .finally(() => setLoading(false))
+    }
+    else {
+      toast.warn("Please select a database")
+    }
   }
   
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      // getContent(e);
-      setContentVisible(true);
+      getContent(e);
     }
   };
 
@@ -74,12 +76,13 @@ const RichTextEditor = () => {
     }
   };
 
-  const handleDataSave = (e, dataId) => {
+  const handleDataSave = (e) => {
+   if(selectedValue != null) {
     setIsSaveVisible(false)
     setLoading(true);
     axios.post(API.BASE_URL + 'SaveData/', {
       Response: selectedQuestions,
-      database_id: dataId,
+      database_id: selectedValue,
     })
     .then(function (response) {
         console.log("Save Data", response.data);
@@ -99,6 +102,10 @@ const RichTextEditor = () => {
         toast.error('Error Saving Data')
     })
     .finally(() => setLoading(false))
+   }
+   else {
+    toast.warn("Please select a database")
+   }
   }
 
   console.log("Message", message);
@@ -188,24 +195,16 @@ const RichTextEditor = () => {
         {
           (message && message.length > 0 || newText && newText.length > 0 && pdfData.length === 0) && (responseFrom === 'This Response is Coming From Chatgpt 1' || responseFrom === 'This Response is Coming From Chatgpt 2') && (
             <div className="save-content">
-              <button className='save mb-3' onClick={() => setIsSaveVisible(true)}>Save Data</button>
-              {isSaveVisible && 
-              <Popup 
-                onClose={() => setIsSaveVisible(false)} 
-                dataOne={(e) => handleDataSave(e, 1)}
-                dataTwo={(e) => handleDataSave(e, 2)}
-              />
-              }
+              <button className='save mb-3' onClick={(e) => handleDataSave(e)}>Save Data</button>
             </div>
           )
         }
         
         <div className="search-bar input-container w-100 position-relative">
           <input type="text" placeholder='AI writing assistant' value={primaryInput} onChange={(e) => {setPrimaryInput(e.target.value)}} onKeyDown={handleKeyPress} />
-          <button type='button' className='button button-fill' onClick={() => setContentVisible(true)}>
+          <button type='button' className='button button-fill' onClick={(e) => getContent(e)}>
             <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
           </button>
-          {isContentVisible && <Popup onClose={() => setContentVisible(false)} dataOne={(e) => getContent(e, 1)} dataTwo={(e) => getContent(e, 2)} />}
           <span className='mt-3 d-flex justify-content-center text-center' style={{fontSize: 12, color: '#6c6c72 '}}>© 2023 Chatbot, All rights reserved</span>
         </div>
        
