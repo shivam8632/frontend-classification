@@ -21,15 +21,15 @@ function Login() {
         })
         .then(function (response) {
             console.log("LOGIN", response)
-            toast.success("Logged in Successfully!");
             localStorage.setItem("Token",response.data.token.access)
             setToken(localStorage.getItem("Token"))
-            axios.post(API.BASE_URL + 'userprofile/', {
+            axios.post(API.BASE_URL + 'userprofile/', {}, {
                 headers: {
                 Authorization: `Bearer ${localStorage.getItem("Token")}`
             }})
             .then(function (response) {
                 console.log("UserProfile", response);
+                toast.success("Logged in Successfully!");
                 localStorage.setItem("User_name", response.data.firstname)
                 localStorage.setItem("Check_is_admin", response.data.is_admin)
                 localStorage.setItem("User_ID", response.data.id)
@@ -37,6 +37,7 @@ function Login() {
             })
             .catch(function (error) {
                 console.log(error);
+                toast.error("Error during sign in");
             })
         })
         .catch(function (error) {
@@ -44,6 +45,7 @@ function Login() {
             if(error.message) {
                 toast.warn(error.message)
             }
+            toast.error("Error during sign in");
         })
         .finally(()=>setLoading(false))
     }

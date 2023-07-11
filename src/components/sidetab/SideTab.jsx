@@ -41,7 +41,7 @@ function Copy() {
     };
 
     useEffect((() => {
-        axios.get(API.BASE_URL + 'label/' + user_id + '/')
+        axios.get(API.BASE_URL + 'label/')
         .then(function (response) {
             console.log("Questions", response);
             setQuestion(response.data.unique_label);
