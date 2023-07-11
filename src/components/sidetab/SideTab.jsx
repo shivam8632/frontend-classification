@@ -6,6 +6,7 @@ import axios from 'axios';
 import { API } from '../../config/Api';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import Popup from '../popup/Popup';
 import {
     MDBTabs,
     MDBTabsItem,
@@ -15,11 +16,12 @@ import {
   } from 'mdb-react-ui-kit';
 
 function Copy() {
-    const {pdfLabel, setPdfLabel, urlHistory, setUrlHistory, setUrlData,label, setText, token, questions, setQuestion, text, message, setMessage,setNewText, fileCheck, setResponseFrom, setFileCheck, setPrimaryInput, URL, setUrl,pdfData, setPdfData, questionId, setQuestionId} = useContext(UserContext)
+    const {pdfLabel, setPdfLabel, urlHistory, setUrlHistory, setUrlData,label, setText, token, questions, setQuestion, text, message, setMessage,setNewText, newText, fileCheck, setResponseFrom, responseFrom, setFileCheck, setPrimaryInput, URL, setUrl,pdfData, setPdfData, questionId, setQuestionId} = useContext(UserContext)
     const [loading, setLoading] = useState(false);
     const [basicActive, setBasicActive] = useState('tab1');
     const [activeId, setActiveId] = useState(null);
     const [pdfLink, setPdfLink] = useState([]);
+    const [isSaveVisible, setIsSaveVisible] = useState(false);
     console.log("label", label)
     console.log("FIle", fileCheck)
 
@@ -93,6 +95,23 @@ function Copy() {
           })
           .finally(() => setLoading(false));
     };
+
+    const handleTrainData = (e, dataId) => {
+        setIsSaveVisible(false)
+        setLoading(true);
+        axios.post(API.BASE_URL + 'finaltrainmodel/', {
+            database_id: dataId,
+            })
+        .then(function (response) {
+            console.log("Train Data", response.data);
+            toast.success("Model Trained Successfully")
+        })
+        .catch(function (error) {
+            console.log(error)
+            toast.error('Error to train data')
+        })
+        .finally(() => setLoading(false))
+    }
       
     useEffect(() => {
     console.log("Text in useEffect", text);
@@ -241,23 +260,23 @@ function Copy() {
             <MDBTabsContent>
                 <MDBTabsPane show={basicActive === 'tab1'}>
                     <div className='input-list' style={{padding: 15}}>
-                <div className="input-container">
-                    <label className='text-white mb-3'>URL Scrapping</label>
-                    <input className='w-100' type="url" placeholder='Enter a URL' onChange={(e) => {setUrl(e.target.value)}} onKeyDown={handleKeyPress} />
-                    <button type='button' className='scrap' onClick={() => handleScrapping()}>Enter</button>
-                </div>
-                
-                <div className="input-container mt-4">
-                    <label className='text-white mb-3'>Upload</label>
-                    <input
-                        className='w-100 text-white'
-                        type="file"
-                        accept="image/*, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, application/pdf"
-                        onChange={handleFileChange}
-                    />
-                <button type='button' className='scrap' onClick={getFileContent}>Upload</button>
-                </div>
-            </div>
+                        <div className="input-container">
+                            <label className='text-white mb-3'>URL Scrapping</label>
+                            <input className='w-100' type="url" placeholder='Enter a URL' onChange={(e) => {setUrl(e.target.value)}} onKeyDown={handleKeyPress} />
+                            <button type='button' className='scrap' onClick={() => handleScrapping()}>Enter</button>
+                        </div>
+                        
+                        <div className="input-container mt-4">
+                            <label className='text-white mb-3'>Upload</label>
+                            <input
+                                className='w-100 text-white'
+                                type="file"
+                                accept="image/*, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, application/pdf"
+                                onChange={handleFileChange}
+                            />
+                        <button type='button' className='scrap' onClick={getFileContent}>Upload</button>
+                        </div>
+                    </div>
                 </MDBTabsPane>
 
                 <MDBTabsPane show={basicActive === 'tab2'}>
@@ -395,6 +414,21 @@ function Copy() {
             </MDBTabsContent>
             </>
         )}
+
+{
+          (message && message.length > 0 || newText && newText.length > 0 && pdfData.length === 0) && (responseFrom === 'This Response is Coming From Chatgpt 1' || responseFrom === 'This Response is Coming From Chatgpt 2') && (
+            <div className="train-content">
+              <button className='save mb-3' onClick={() => setIsSaveVisible(true)}>Train Model</button>
+              {isSaveVisible && 
+              <Popup 
+                onClose={() => setIsSaveVisible(false)} 
+                dataOne={(e) => handleTrainData(e, 1)}
+                dataTwo={(e) => handleTrainData(e, 2)}
+              />
+              }
+            </div>
+          )
+        }
         <div className="logout mt-auto">
             <button type='button' className='button' onClick={() => {handleLogout()}}>Logout</button>
         </div>

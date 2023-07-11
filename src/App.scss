@@ -93,6 +93,7 @@ form {
         background-color: #202123 !important;
         padding: 8px 15px !important;
         border-radius: 0.375rem !important;
+        width: fit-content !important;
         &:nth-child(1) {
           margin-right: 15px !important;
         }
@@ -107,6 +108,7 @@ form {
       padding: 0 !important;
       margin: 0 !important;
       background: none !important;
+      width: fit-content !important;
     }
   }
 }
@@ -159,6 +161,12 @@ select {
     width: 20px;
     object-fit: contain;
     margin-right: 10px;
+  }
+}
+
+.train-content {
+  button {
+    background: #343541;
   }
 }
 
