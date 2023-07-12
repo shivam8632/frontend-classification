@@ -63,7 +63,7 @@ form {
   z-index: 3;
   top: 0;
   left: 0;
-  background-color: rgba(0, 0, 0, .5);
+  background-color: rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -96,6 +96,7 @@ form {
         width: fit-content !important;
         &:nth-child(1) {
           margin-right: 15px !important;
+          background: red !important;
         }
       }
     }
@@ -201,6 +202,15 @@ select {
 
 .dashboard  {
   position: relative;
+}
+
+button.delete-icon {
+  padding: 0 !important;
+  margin: 0;
+  min-width: unset;
+  width: fit-content !important;
+  background-color: transparent;
+  border: none;
 }
 
 // .loader {

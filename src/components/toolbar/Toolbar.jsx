@@ -7,6 +7,8 @@ import UserContext from '../context/UserContext';
 import axios from 'axios';
 import { API } from '../../config/Api';
 import { toast } from 'react-toastify';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClose } from '@fortawesome/free-solid-svg-icons';
 
 const RichTextEditor = () => {
   const {selectedValue, setUrlData, urlData, text, setQuestion, message, setMessage, setFileCheck, primaryInput, setPrimaryInput, setText, label, setLabel, responseFrom, setResponseFrom,newText, setNewText,setPdfData, pdfData, setUrl, setQuestionId} = useContext(UserContext)
@@ -15,6 +17,7 @@ const RichTextEditor = () => {
   const [loading, setLoading] = useState(false);
   const [isContentVisible, setContentVisible] = useState(false);
   const [isSaveVisible, setIsSaveVisible] = useState(false);
+  const [labelDataId, setLabelDataId] = useState(null);
   
   const user_id = localStorage.getItem("User_ID");
   
@@ -110,6 +113,35 @@ const RichTextEditor = () => {
    }
   }
 
+  const handleShowPopup = (e, id) => {
+    e.preventDefault()
+    console.log("Label Data ID" ,id)
+    setLabelDataId(id)
+    setContentVisible(true)
+  }
+
+  const handleClosePopup = () => {
+    setContentVisible(false);
+  };
+
+  const handleDelete = () => {
+    console.log("Label Data ID" ,labelDataId)
+    setContentVisible(false)
+    setLoading(true)
+    axios.post(API.BASE_URL + 'deletequestion/', {
+      question_id: labelDataId,
+      database_id: selectedValue,
+    },)
+    .then(function (response) {
+        console.log("Data", response.data);
+        toast.success("Data Deleted");
+    })
+    .catch(function (error) {
+        console.log(error)
+    })
+    .finally(() => setLoading(false))
+  }
+
   console.log("Message", message);
   console.log("selectedQuestions", selectedQuestions);
   console.log("pdfData", pdfData);
@@ -170,12 +202,35 @@ const RichTextEditor = () => {
             pdfData && pdfData?.length > 0 ? (
               pdfData?.map((data, i) => {
                 return(
+                  <>
                   <div className="questions">
                     <div className="question-text d-flex flex-column">
                       <label htmlFor="">Q. {data.Question}</label>
                       <p htmlFor="">Ans. {data.Answer}</p>
+                      <button className='mt-2' onClick={(e) => handleShowPopup(e, data.id)}>Delete</button>
                     </div>
                   </div>
+                  {
+                    isContentVisible && (
+                      <div className="popup">
+                        <div className="popup-content">
+                            <h2>Delete Data</h2>
+                            <p>Deleting will remove the selected question and answer from database</p>
+                            <div className="buttons">
+                                <button className="btn" onClick={() => {handleDelete()}}>Delete</button>
+                                <button className="btn" onClick={(e) => handleClosePopup(e)}>Cancel</button>
+                            </div>
+                            <button className="close" onClick={(e) => handleClosePopup(e)}>
+                                <FontAwesomeIcon
+                                icon={faClose}
+                                style={{ color: '#000', width: '25px', height: '25px' }}
+                                />
+                            </button>
+                        </div>
+                    </div>
+                    )
+                  }
+                  </>
                 )
               })
             ) :
@@ -209,6 +264,8 @@ const RichTextEditor = () => {
           </button>
           <span className='mt-3 d-flex justify-content-center text-center' style={{fontSize: 12, color: '#6c6c72 '}}>© 2023 Chatbot, All rights reserved</span>
         </div>
+
+        
        
       </Container>
   );

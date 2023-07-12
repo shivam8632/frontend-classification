@@ -1,7 +1,7 @@
 import React, {useState, useContext, useEffect} from 'react';
 import UserContext from '../context/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMessage, faShareFromSquare, faDownload, faShare } from "@fortawesome/free-solid-svg-icons";
+import { faMessage, faShareFromSquare, faDownload, faShare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import axios from 'axios';
 import { API } from '../../config/Api';
 import { useNavigate } from 'react-router-dom';
@@ -206,9 +206,8 @@ function Copy() {
         setResponseFrom('');
         setNewText('')
         setMessage('')
-        axios.post(API.BASE_URL + 'ShowData/' + user_id + '/', {
+        axios.post(API.BASE_URL + 'ShowData/', {
             id: id,
-            user_id: user_id,
             database_id: selectedValue
         })
         .then(function (response) {
@@ -223,6 +222,33 @@ function Copy() {
             console.log(error)
         })
         .finally(() => setLoading(false))
+    }
+
+    const handleLabelDelete = (id) => {
+        setLoading(true);
+        axios.post(API.BASE_URL + 'deletelabel/', {
+            database_id: selectedValue,
+            label_id: id,
+        })
+        .then(function (response) {
+            console.log("Delete Label", response);
+            toast.success("Label Deleted");
+            axios.post(API.BASE_URL + 'label/', {
+                database_id: selectedValue
+            })
+            .then(function (response) {
+                console.log("Questions", response);
+                setQuestion(response.data.unique_label);
+                setQuestionId(response.data.unique_id)
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+        .finally(() => setLoading(false));
     }
 
     console.log("URLHOSTORY", urlHistory)
@@ -327,7 +353,7 @@ function Copy() {
                                         text != '' && (
                                             <li
                                                 className={`text-white d-flex align-items-center ${liClass}`}
-                                                style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}
+                                                style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', position: 'relative', zIndex: 2,}}
                                                 onClick={() => {setActiveId(questionId[i]);handleShowData(questionId[i])}}
                                                 > <FontAwesomeIcon 
                                                 icon={faMessage}
@@ -337,16 +363,33 @@ function Copy() {
                                                     height: "15px",
                                                     marginRight: 10
                                                 }}
-                                            /> {text}
+                                            />
+                                            {text}
                                                 <FontAwesomeIcon 
                                                     icon={faShare}
                                                     style={{
                                                         color: "#fff",
                                                         width: "20px",
                                                         height: "20px",
-                                                        marginLeft: 'auto'
+                                                        marginLeft: 'auto',
+                                                        marginRight: 30,
                                                     }}
                                                 /> 
+                                                <button className='delete-icon' onClick={() => {handleLabelDelete(questionId[i])}}>
+                                                    <FontAwesomeIcon 
+                                                        icon={faTrash}
+                                                        style={{
+                                                            color: "#fff",
+                                                            width: "20px",
+                                                            height: "20px",
+                                                            position: 'relative',
+                                                            zIndex: 4,
+                                                            right: 0,
+                                                            top: 0,
+                                                            bottom: 0,
+                                                        }}
+                                                    />
+                                                </button>
                                             </li>
                                         )
                                     )

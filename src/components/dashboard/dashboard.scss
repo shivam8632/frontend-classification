@@ -115,6 +115,10 @@
                     flex-wrap: wrap;
                     justify-content: space-between;
                     margin-bottom: 1.5rem;
+                    button {
+                        width: fit-content;
+                        cursor: pointer;
+                    }
                     input {
                         height: 20px;
                         min-height: fit-content;
