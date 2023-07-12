@@ -15,7 +15,7 @@ import {
   } from 'mdb-react-ui-kit';
 
 function Copy() {
-    const {selectedValue, setSelectedValue, pdfLabel, setPdfLabel, urlHistory, setUrlHistory, setUrlData,label, setText, token, questions, setQuestion, text, message, setMessage,setNewText, newText, fileCheck, setResponseFrom, responseFrom, setFileCheck, setPrimaryInput, URL, setUrl,pdfData, setPdfData, questionId, setQuestionId} = useContext(UserContext)
+    const {selectedValue, setSingleLabelId, setSelectedValue, pdfLabel, setPdfLabel, urlHistory, setUrlHistory, setUrlData,label, setText, token, questions, setQuestion, text, message, setMessage,setNewText, newText, fileCheck, setResponseFrom, responseFrom, setFileCheck, setPrimaryInput, URL, setUrl,pdfData, setPdfData, questionId, setQuestionId} = useContext(UserContext)
     const [loading, setLoading] = useState(false);
     const [basicActive, setBasicActive] = useState('tab1');
     const [activeId, setActiveId] = useState(null);
@@ -43,8 +43,10 @@ function Copy() {
 
     const handleScrapping = () => {
         setText('');
+        setPdfData('')
         const formData = new FormData();
         formData.append('url', URL);
+        formData.append('database_id', selectedValue)
         setLoading(true);
         axios.post(API.BASE_URL + 'adminscrapping/', formData, {
           headers: {
@@ -53,9 +55,9 @@ function Copy() {
         })
           .then(function (response) {
             setPrimaryInput('');
-            console.log("Scrappingggg", response.data.message);
-            setUrlData(response.data.message);
-            setText(response.data.data);
+            console.log("Scrappingggg", response);
+            setUrlData(response.data.QA_Pairs);
+            // setText(response.data.QA_Pairs);
             axios.post(API.BASE_URL + 'urldata/', {
                 database_id: selectedValue
             })
@@ -66,6 +68,9 @@ function Copy() {
             })
             .catch(function (error) {
                 console.log(error);
+                if(response.data.message == "url is required") {
+                    toast.warn("Please enter the url")
+                }
             })
           })
           .catch(function (error) {
@@ -169,6 +174,7 @@ function Copy() {
     
         const formData = new FormData();
         formData.append('pdf', fileCheck);
+        formData.append('database_id', selectedValue)
         setPrimaryInput('');
     
         axios.post(API.BASE_URL + 'pdfresult/', formData, {
@@ -206,6 +212,7 @@ function Copy() {
         setResponseFrom('');
         setNewText('')
         setMessage('')
+        setSingleLabelId(id)
         axios.post(API.BASE_URL + 'ShowData/', {
             id: id,
             database_id: selectedValue

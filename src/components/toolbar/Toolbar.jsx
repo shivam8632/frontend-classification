@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 
 const RichTextEditor = () => {
-  const {selectedValue, setUrlData, urlData, text, setQuestion, message, setMessage, setFileCheck, primaryInput, setPrimaryInput, setText, label, setLabel, responseFrom, setResponseFrom,newText, setNewText,setPdfData, pdfData, setUrl, setQuestionId} = useContext(UserContext)
+  const {singleLabelId, selectedValue, setUrlData, urlData, text, setQuestion, message, setMessage, setFileCheck, primaryInput, setPrimaryInput, setText, label, setLabel, responseFrom, setResponseFrom,newText, setNewText,setPdfData, pdfData, setUrl, setQuestionId} = useContext(UserContext)
   
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -135,6 +135,21 @@ const RichTextEditor = () => {
     .then(function (response) {
         console.log("Data", response.data);
         toast.success("Data Deleted");
+        axios.post(API.BASE_URL + 'ShowData/', {
+          id: singleLabelId,
+          database_id: selectedValue
+      })
+      .then(function (response) {
+          setPrimaryInput('');
+          setResponseFrom('');
+          setNewText('')
+          setMessage('')
+          console.log("PDF response Data", response.data);
+          setPdfData(response.data)
+      })
+      .catch(function (error) {
+          console.log(error)
+      })
     })
     .catch(function (error) {
         console.log(error)
@@ -146,6 +161,7 @@ const RichTextEditor = () => {
   console.log("selectedQuestions", selectedQuestions);
   console.log("pdfData", pdfData);
   console.log("isSaveVisible", isSaveVisible)
+  console.log("URLDATA", urlData)
   
   
   return (
@@ -173,11 +189,16 @@ const RichTextEditor = () => {
           :
           urlData && urlData.length > 0 ?(
               urlData.map((ques, i) => {
+                const question = ques?.Question;
+                const answer = ques?.Answer;
+                const label = ques?.Label;
               return(
                 <div className="questions" key={i}>
-                  <input type="checkbox" name="" id="" />
+                  <input type="checkbox" onChange={(event) => handleCheckboxChange(event, question, answer, label)} />
                   <div className="question-text">
-                    <label htmlFor="">{ques}</label>
+                    {/* <h6 style={{color: '#dfdfdf'}}><strong style={{fontStyle: 'italic',}}>{ques.Label}</strong></h6> */}
+                    <label htmlFor="">Q. {question}</label>
+                    <p className='my-1'>Ans. {answer}</p>
                   </div>
                 </div>
               )
@@ -191,7 +212,7 @@ const RichTextEditor = () => {
               )}
               
               <div className="question-text d-flex flex-column">
-              <h6 style={{color: '#dfdfdf'}}><strong style={{fontStyle: 'italic',}}>{responseFrom}</strong></h6>
+                <h6 style={{color: '#dfdfdf'}}><strong style={{fontStyle: 'italic',}}>{responseFrom}</strong></h6>
                 <label htmlFor="">Q. {primaryInput}</label>
                 <p className='my-1'>Ans. {newText}</p>
                 
@@ -250,7 +271,7 @@ const RichTextEditor = () => {
         }
       </div>
         {
-          (message && message.length > 0 || newText && newText.length > 0 && pdfData.length === 0) && (responseFrom === 'This Response is Coming From Chatgpt 1' || responseFrom === 'This Response is Coming From Chatgpt 2') && (
+          (urlData && urlData.length > 0 || message && message.length > 0 || newText && newText.length > 0 && pdfData.length === 0 || responseFrom ===` This Response is Coming From Chatgpt ${selectedValue}`) && (
             <div className="save-content">
               <button className='save mb-3' onClick={(e) => handleDataSave(e)}>Save Data</button>
             </div>
