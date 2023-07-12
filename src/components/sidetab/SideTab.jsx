@@ -41,38 +41,6 @@ function Copy() {
         setFileCheck(e.target.files[0]);
     };
 
-    useEffect((() => {
-        axios.get(API.BASE_URL + 'label/')
-        .then(function (response) {
-            console.log("Questions", response);
-            setQuestion(response.data.unique_label);
-            setQuestionId(response.data.unique_id)
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
-        axios.get(API.BASE_URL + 'urldata/')
-        .then(function (response) {
-            console.log("URL History", response);
-            const filteredLabels = response.data.labels.filter(label => label !== "");
-            setUrlHistory(filteredLabels);
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
-        axios.get(API.BASE_URL + 'pdfdata/')
-        .then(function (response) {
-            console.log("PDF Label", response);
-            const filteredLabels = response.data.pdffilename.filter(label => label !== null || "");
-            setPdfLabel(filteredLabels);
-            const filteredPdfLink = response.data.pdfdownload.filter(label => label !== null || "");
-            setPdfLink(filteredPdfLink);
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
-    }), [])
-
     const handleScrapping = () => {
         setText('');
         const formData = new FormData();
@@ -118,7 +86,43 @@ function Copy() {
 
     const handleButtonClick = (value) => {
         setSelectedValue(value);
-        toast.success("Database" + value + 'selected')
+        toast.success("Database " + value + 'selected')
+        axios.post(API.BASE_URL + 'label/', {
+            database_id: value
+        })
+        .then(function (response) {
+            console.log("Questions", response);
+            setQuestion(response.data.unique_label);
+            setQuestionId(response.data.unique_id)
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+
+        axios.post(API.BASE_URL + 'urldata/', {
+            database_id: value
+        })
+        .then(function (response) {
+            console.log("URL History", response);
+            const filteredLabels = response.data.labels.filter(label => label !== "");
+            setUrlHistory(filteredLabels);
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+        axios.post(API.BASE_URL + 'pdfdata/', {
+            database_id: value
+        })
+        .then(function (response) {
+            console.log("PDF Label", response);
+            const filteredLabels = response.data.pdffilename.filter(label => label !== null || "");
+            setPdfLabel(filteredLabels);
+            const filteredPdfLink = response.data.pdfdownload.filter(label => label !== null || "");
+            setPdfLink(filteredPdfLink);
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
     };
 
     console.log("selectedValue" ,selectedValue)
@@ -187,8 +191,10 @@ function Copy() {
         setResponseFrom('');
         setNewText('')
         setMessage('')
-        axios.post(API.BASE_URL + 'ShowData/', {
-            id: id
+        axios.post(API.BASE_URL + 'ShowData/' + user_id + '/', {
+            id: id,
+            user_id: user_id,
+            database_id: selectedValue
         })
         .then(function (response) {
             setPrimaryInput('');
@@ -332,13 +338,23 @@ function Copy() {
                                 })}
                             </ul>
                         ) :
+                        selectedValue == null ? (
                         <h5
                         className='d-flex justify-content-center align-items-center text-white'
                         style={{
                             minHeight: '70vh',
                             margin: 0,
                         }}
-                        >No Label Found</h5>}
+                        >Select a database</h5>)
+                    :
+                    <h5
+                        className='d-flex justify-content-center align-items-center text-white'
+                        style={{
+                            minHeight: '70vh',
+                            margin: 0,
+                        }}
+                        >No Label Found</h5>
+                        }
                     
                     </>
                 </MDBTabsPane>

@@ -87,7 +87,9 @@ const RichTextEditor = () => {
     .then(function (response) {
         console.log("Save Data", response.data);
         toast.success('Data Saved Successfully');
-        axios.get(API.BASE_URL + 'label/' + user_id + '/')
+        axios.post(API.BASE_URL + 'label/', {
+          database_id: selectedValue
+      })
         .then(function (response) {
             console.log("Questions", response);
             setQuestion(response.data.unique_label);
@@ -170,8 +172,8 @@ const RichTextEditor = () => {
                 return(
                   <div className="questions">
                     <div className="question-text d-flex flex-column">
-                      <label htmlFor="">Q. {data.Question.question}</label>
-                      <p htmlFor="">Ans. {data.Answer.answer}</p>
+                      <label htmlFor="">Q. {data.Question}</label>
+                      <p htmlFor="">Ans. {data.Answer}</p>
                     </div>
                   </div>
                 )
