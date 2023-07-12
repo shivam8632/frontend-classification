@@ -15,7 +15,7 @@ import {
   } from 'mdb-react-ui-kit';
 
 function Copy() {
-    const {selectedValue, setSingleLabelId, setSelectedValue, pdfLabel, setPdfLabel, urlHistory, setUrlHistory, setUrlData,label, setText, token, questions, setQuestion, text, message, setMessage,setNewText, newText, fileCheck, setResponseFrom, setPredictionQues, setFileCheck, setPrimaryInput, URL, setUrl,pdfData, setPdfData, questionId, setQuestionId} = useContext(UserContext)
+    const {selectedValue, setSingleLabelId, setSelectedValue, pdfLabel, setPdfLabel, urlHistory, setUrlHistory, setUrlData,label, setText, token, questions, setQuestion, text, message, setMessage,setNewText, newText, fileCheck, setResponseFrom, setPredictionQues, setFileCheck, setPrimaryInput, URL, setUrl,pdfData, setPdfData, questionId, setQuestionId, selectedQuestions, setSelectedQuestions} = useContext(UserContext)
     const [loading, setLoading] = useState(false);
     const [basicActive, setBasicActive] = useState('tab1');
     const [activeId, setActiveId] = useState(null);
@@ -45,6 +45,7 @@ function Copy() {
     const handleScrapping = () => {
         setText('');
         setPdfData('')
+        setSelectedQuestions([])
         const formData = new FormData();
         formData.append('url', URL);
         formData.append('database_id', selectedValue)
@@ -186,7 +187,7 @@ function Copy() {
 
     const getFileContent = () => {
         setLoading(true);
-    
+        setSelectedQuestions([])
         setUrlData('')
         const formData = new FormData();
         formData.append('pdf', fileCheck);

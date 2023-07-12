@@ -11,9 +11,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 
 const RichTextEditor = () => {
-  const {singleLabelId, selectedValue, setUrlData, urlData, text, setQuestion, message, setMessage, setFileCheck, primaryInput, setPrimaryInput, setText, label, setLabel, responseFrom, setResponseFrom,newText, setNewText,setPdfData, pdfData, setUrl, setQuestionId, predictionQues, setPredictionQues} = useContext(UserContext)
+  const {singleLabelId, selectedValue, setUrlData, urlData, text, setQuestion, message, setMessage, setFileCheck, primaryInput, setPrimaryInput, setText, label, setLabel, responseFrom, setResponseFrom,newText, setNewText,setPdfData, pdfData, setUrl, setQuestionId, predictionQues, setPredictionQues, selectedQuestions, setSelectedQuestions} = useContext(UserContext)
   
-  const [selectedQuestions, setSelectedQuestions] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [isContentVisible, setContentVisible] = useState(false);
   const [isSaveVisible, setIsSaveVisible] = useState(false);
@@ -169,6 +169,7 @@ const RichTextEditor = () => {
   console.log("message", message)
   console.log("URLDATA", urlData)
   console.log("NewText", newText)
+  console.log("selectedQuestions",selectedQuestions)
   
   
   return (

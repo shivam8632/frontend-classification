@@ -21,9 +21,10 @@ export const AuthProvider = ({children})=>{
     const [questionId, setQuestionId] = useState([]);
     const [selectedValue, setSelectedValue] = useState(1);
     const [singleLabelId, setSingleLabelId] = useState(null);
+    const [selectedQuestions, setSelectedQuestions] = useState([]);
 
     return (
-        <UserContext.Provider value={{predictionQues, setPredictionQues, setSingleLabelId, singleLabelId, selectedValue, setSelectedValue,questionId, setQuestionId, newText, setNewText, pdfData, setPdfData, pdfLabel, setPdfLabel, urlHistory, setUrlHistory, urlData, setUrlData, URL, setUrl, primaryInput, setPrimaryInput, fileCheck, setFileCheck, responseFrom, setResponseFrom, message, setMessage, text, setText, token, setToken, label, setLabel, questions, setQuestion}}>
+        <UserContext.Provider value={{selectedQuestions, setSelectedQuestions, predictionQues, setPredictionQues, setSingleLabelId, singleLabelId, selectedValue, setSelectedValue,questionId, setQuestionId, newText, setNewText, pdfData, setPdfData, pdfLabel, setPdfLabel, urlHistory, setUrlHistory, urlData, setUrlData, URL, setUrl, primaryInput, setPrimaryInput, fileCheck, setFileCheck, responseFrom, setResponseFrom, message, setMessage, text, setText, token, setToken, label, setLabel, questions, setQuestion}}>
             {children}
         </UserContext.Provider>
     )
