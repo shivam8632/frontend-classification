@@ -56,6 +56,17 @@ function Copy() {
             console.log("Scrappingggg", response.data.message);
             setUrlData(response.data.message);
             setText(response.data.data);
+            axios.post(API.BASE_URL + 'urldata/', {
+                database_id: selectedValue
+            })
+            .then(function (response) {
+                console.log("URL History", response);
+                const filteredLabels = response.data.labels.filter(label => label !== "");
+                setUrlHistory(filteredLabels);
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
           })
           .catch(function (error) {
             console.log(error);
@@ -168,11 +179,15 @@ function Copy() {
           .then(function (response) {
             console.log('PDF Data', response);
             setMessage(response.data.QA_Pairs)
-            axios.get(API.BASE_URL + 'pdfdata/')
+            axios.post(API.BASE_URL + 'pdfdata/', {
+                database_id: selectedValue
+            })
             .then(function (response) {
                 console.log("PDF Label", response);
-                // const filteredLabels = response.data.labels.filter(label => label !== "");
-                // setQuestion(filteredLabels);
+                const filteredLabels = response.data.pdffilename.filter(label => label !== null || "");
+                setPdfLabel(filteredLabels);
+                const filteredPdfLink = response.data.pdfdownload.filter(label => label !== null || "");
+                setPdfLink(filteredPdfLink);
             })
             .catch(function (error) {
                 console.log(error);
