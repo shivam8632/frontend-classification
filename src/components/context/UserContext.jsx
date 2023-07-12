@@ -19,7 +19,7 @@ export const AuthProvider = ({children})=>{
     const [newText, setNewText] = useState('');
     const [URL, setUrl] = useState('')
     const [questionId, setQuestionId] = useState([]);
-    const [selectedValue, setSelectedValue] = useState(null);
+    const [selectedValue, setSelectedValue] = useState(1);
     const [singleLabelId, setSingleLabelId] = useState(null);
 
     return (

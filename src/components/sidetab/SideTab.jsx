@@ -20,6 +20,7 @@ function Copy() {
     const [basicActive, setBasicActive] = useState('tab1');
     const [activeId, setActiveId] = useState(null);
     const [pdfLink, setPdfLink] = useState([]);
+    const [labelDelId, setLabelDelId] = useState('');
     const [isContentVisible, setContentVisible] = useState(false);
     console.log("label", label)
     console.log("FIle", fileCheck)
@@ -228,6 +229,7 @@ function Copy() {
         setNewText('')
         setUrlData('')
         setMessage('')
+        console.log("ID", id)
         setSingleLabelId(id)
         axios.post(API.BASE_URL + 'ShowData/', {
             id: id,
@@ -247,12 +249,12 @@ function Copy() {
         .finally(() => setLoading(false))
     }
 
-    const handleLabelDelete = (id) => {
+    const handleLabelDelete = () => {
         setLoading(true);
         setContentVisible(false);
         axios.post(API.BASE_URL + 'deletelabel/', {
             database_id: selectedValue,
-            label_id: id,
+            label_id: labelDelId,
         })
         .then(function (response) {
             console.log("Delete Label", response);
@@ -275,7 +277,9 @@ function Copy() {
         .finally(() => setLoading(false));
     }
 
-    const handleShowPopup = (e) => {
+    const handleShowPopup = (e, id) => {
+        console.log("ID", id)
+        setLabelDelId(id)
         e.preventDefault()
         setContentVisible(true)
       }
@@ -411,7 +415,7 @@ function Copy() {
                                                         marginRight: 30,
                                                     }}
                                                 /> 
-                                                <button className='delete-icon' onClick={(e) => {handleShowPopup(e)}}
+                                                <button className='delete-icon' onClick={(e) => {handleShowPopup(e, questionId[i])}}
                                                 style={{
                                                     position: 'relative',
                                                     zIndex: 4,
@@ -428,15 +432,14 @@ function Copy() {
                                                         }}
                                                     />
                                                 </button>
-                                            </li>
-                                            {
+                                                {
                                                 isContentVisible && (
                                                   <div className="popup">
                                                     <div className="popup-content">
-                                                        <h2>Delete Data</h2>
-                                                        <p>Deleting will remove the selected question and answer from database</p>
+                                                        <h2> Do you want to delete label?</h2>
+                                                        <p>Deleting will remove the label from database</p>
                                                         <div className="buttons">
-                                                            <button className="btn" onClick={() => {handleLabelDelete(questionId[i])}}>Delete</button>
+                                                            <button className="btn" onClick={() => {handleLabelDelete()}}>Delete</button>
                                                             <button className="btn" onClick={(e) => handleClosePopup(e)}>Cancel</button>
                                                         </div>
                                                         <button className="close" onClick={(e) => handleClosePopup(e)}>
@@ -449,6 +452,8 @@ function Copy() {
                                                 </div>
                                                 )
                                               }
+                                            </li>
+                                            
                                               </>
                                         )
                                     )
