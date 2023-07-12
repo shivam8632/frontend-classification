@@ -1,7 +1,7 @@
 import React, {useState, useContext, useEffect} from 'react';
 import UserContext from '../context/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMessage, faShareFromSquare, faDownload, faShare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faMessage, faShareFromSquare, faDownload, faShare, faTrash, faClose } from "@fortawesome/free-solid-svg-icons";
 import axios from 'axios';
 import { API } from '../../config/Api';
 import { useNavigate } from 'react-router-dom';
@@ -15,19 +15,19 @@ import {
   } from 'mdb-react-ui-kit';
 
 function Copy() {
-    const {selectedValue, setSingleLabelId, setSelectedValue, pdfLabel, setPdfLabel, urlHistory, setUrlHistory, setUrlData,label, setText, token, questions, setQuestion, text, message, setMessage,setNewText, newText, fileCheck, setResponseFrom, responseFrom, setFileCheck, setPrimaryInput, URL, setUrl,pdfData, setPdfData, questionId, setQuestionId} = useContext(UserContext)
+    const {selectedValue, setSingleLabelId, setSelectedValue, pdfLabel, setPdfLabel, urlHistory, setUrlHistory, setUrlData,label, setText, token, questions, setQuestion, text, message, setMessage,setNewText, newText, fileCheck, setResponseFrom, setPredictionQues, setFileCheck, setPrimaryInput, URL, setUrl,pdfData, setPdfData, questionId, setQuestionId} = useContext(UserContext)
     const [loading, setLoading] = useState(false);
     const [basicActive, setBasicActive] = useState('tab1');
     const [activeId, setActiveId] = useState(null);
     const [pdfLink, setPdfLink] = useState([]);
-    const [isSaveVisible, setIsSaveVisible] = useState(false);
+    const [isContentVisible, setContentVisible] = useState(false);
     console.log("label", label)
     console.log("FIle", fileCheck)
 
     const user =  localStorage.getItem("User_name");
     const checkAdmin = localStorage.getItem("Check_is_admin");
     const user_id = localStorage.getItem("User_ID");
-    console.log("checkAdmin", checkAdmin);
+    console.log("checkAdmin", isContentVisible);
     const navigate = useNavigate();
     const handleBasicClick = (value) => {
         if (value === basicActive) {
@@ -154,24 +154,39 @@ function Copy() {
     };
 
     const handleLogout = () => {
-        axios.post(API.BASE_URL + 'logout/', {}, {
-            headers: {
-            Authorization: `Bearer ${token}`
-        }})
-        .then(function (response) {
-            console.log("Logout", response);
-            localStorage.clear();
-            toast.success("User logged out")
-            navigate('/');
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
+        setUrl('');
+        setFileCheck('')
+        setMessage('');
+        setUrlData('');
+        setPdfData('')
+        setNewText('')
+        setPredictionQues('')
+        setPrimaryInput('')
+        setResponseFrom('')
+        localStorage.clear();
+        toast.success("User logged out")
+        navigate('/');
+        window.location.reload();
+        //     navigate('/');
+        // axios.post(API.BASE_URL + 'logout/', {}, {
+        //     headers: {
+        //     Authorization: `Bearer ${token}`
+        // }})
+        // .then(function (response) {
+        //     console.log("Logout", response);
+        //     localStorage.clear();
+        //     toast.success("User logged out")
+        //     navigate('/');
+        // })
+        // .catch(function (error) {
+        //     console.log(error);
+        // })
     }
 
     const getFileContent = () => {
         setLoading(true);
     
+        setUrlData('')
         const formData = new FormData();
         formData.append('pdf', fileCheck);
         formData.append('database_id', selectedValue)
@@ -211,6 +226,7 @@ function Copy() {
         setPrimaryInput('');
         setResponseFrom('');
         setNewText('')
+        setUrlData('')
         setMessage('')
         setSingleLabelId(id)
         axios.post(API.BASE_URL + 'ShowData/', {
@@ -233,6 +249,7 @@ function Copy() {
 
     const handleLabelDelete = (id) => {
         setLoading(true);
+        setContentVisible(false);
         axios.post(API.BASE_URL + 'deletelabel/', {
             database_id: selectedValue,
             label_id: id,
@@ -257,6 +274,16 @@ function Copy() {
         })
         .finally(() => setLoading(false));
     }
+
+    const handleShowPopup = (e) => {
+        e.preventDefault()
+        setContentVisible(true)
+      }
+
+    const handleClosePopup = (e) => {
+        e.preventDefault()
+        setContentVisible(false);
+    };
 
     console.log("URLHOSTORY", urlHistory)
     console.log('Questions Data', questions)
@@ -356,8 +383,10 @@ function Copy() {
                             <ul className='py-4 px-0'>
                                 {questions?.map((text, i) => {
                                     const liClass = questionId[i] === activeId && pdfData?.length > 0? 'active' : '';
+                                    
                                     return(
                                         text != '' && (
+                                            <>
                                             <li
                                                 className={`text-white d-flex align-items-center ${liClass}`}
                                                 style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', position: 'relative', zIndex: 2,}}
@@ -382,22 +411,45 @@ function Copy() {
                                                         marginRight: 30,
                                                     }}
                                                 /> 
-                                                <button className='delete-icon' onClick={() => {handleLabelDelete(questionId[i])}}>
+                                                <button className='delete-icon' onClick={(e) => {handleShowPopup(e)}}
+                                                style={{
+                                                    position: 'relative',
+                                                    zIndex: 4,
+                                                    right: 0,
+                                                    top: 0,
+                                                    bottom: 0,
+                                                }}>
                                                     <FontAwesomeIcon 
                                                         icon={faTrash}
                                                         style={{
                                                             color: "#fff",
                                                             width: "20px",
                                                             height: "20px",
-                                                            position: 'relative',
-                                                            zIndex: 4,
-                                                            right: 0,
-                                                            top: 0,
-                                                            bottom: 0,
                                                         }}
                                                     />
                                                 </button>
                                             </li>
+                                            {
+                                                isContentVisible && (
+                                                  <div className="popup">
+                                                    <div className="popup-content">
+                                                        <h2>Delete Data</h2>
+                                                        <p>Deleting will remove the selected question and answer from database</p>
+                                                        <div className="buttons">
+                                                            <button className="btn" onClick={() => {handleLabelDelete(questionId[i])}}>Delete</button>
+                                                            <button className="btn" onClick={(e) => handleClosePopup(e)}>Cancel</button>
+                                                        </div>
+                                                        <button className="close" onClick={(e) => handleClosePopup(e)}>
+                                                            <FontAwesomeIcon
+                                                            icon={faClose}
+                                                            style={{ color: '#000', width: '25px', height: '25px' }}
+                                                            />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                )
+                                              }
+                                              </>
                                         )
                                     )
                                 })}

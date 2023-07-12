@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 
 const RichTextEditor = () => {
-  const {singleLabelId, selectedValue, setUrlData, urlData, text, setQuestion, message, setMessage, setFileCheck, primaryInput, setPrimaryInput, setText, label, setLabel, responseFrom, setResponseFrom,newText, setNewText,setPdfData, pdfData, setUrl, setQuestionId} = useContext(UserContext)
+  const {singleLabelId, selectedValue, setUrlData, urlData, text, setQuestion, message, setMessage, setFileCheck, primaryInput, setPrimaryInput, setText, label, setLabel, responseFrom, setResponseFrom,newText, setNewText,setPdfData, pdfData, setUrl, setQuestionId, predictionQues, setPredictionQues} = useContext(UserContext)
   
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -29,35 +29,40 @@ const RichTextEditor = () => {
   const getContent = (e) => {
     if(selectedValue !=null) {
       setLoading(true);
-    e.preventDefault();
-    setUrl('');
-    setFileCheck('')
-    setMessage('');
-    setUrlData('');
-    setPdfData('')
-    const formData = new FormData();
-    formData.append('input',primaryInput);
-    formData.append('user_id',user_id);
-    formData.append('database_id', selectedValue)
-    axios.post(API.BASE_URL + 'finalprediction/', formData, {
-      'Content-Type': 'multipart/form-data',
-    },)
-    .then(function (response) {
-        console.log("Data", response.data);
-        setMessage('');
-        setText('');
-        setText(response.data.Answer);
-        setResponseFrom(response.data.AnswerSource)
-        setLabel(prevLabels => [...prevLabels, response.data.Label]);
-    })
-    .catch(function (error) {
-        console.log(error)
-    })
-    .finally(() => setLoading(false))
-    }
-    else {
-      toast.warn("Please select a database")
-    }
+      e.preventDefault();
+      setUrl('');
+      setFileCheck('')
+      setMessage('');
+      setUrlData('');
+      setPdfData('')
+      setNewText('')
+      setResponseFrom('')
+      const formData = new FormData();
+      formData.append('input',primaryInput);
+      formData.append('user_id',user_id);
+      formData.append('database_id', selectedValue)
+      axios.post(API.BASE_URL + 'finalprediction/', formData, {
+        'Content-Type': 'multipart/form-data',
+      },)
+      .then(function (response) {
+          console.log("Data", response.data);
+          setMessage('');
+          setText('');
+          setText(response.data.Answer);
+          setResponseFrom('')
+          setResponseFrom(response.data.AnswerSource)
+          setPredictionQues(response.data.Question)
+          console.log("response.data.AnswerSource", response.data.AnswerSource)
+          setLabel(prevLabels => [...prevLabels, response.data.Label]);
+      })
+      .catch(function (error) {
+          console.log(error)
+      })
+      .finally(() => setLoading(false))
+      }
+      else {
+        toast.warn("Please select a database")
+      }
   }
   
   const handleKeyPress = (e) => {
@@ -157,11 +162,13 @@ const RichTextEditor = () => {
     .finally(() => setLoading(false))
   }
 
-  console.log("Message", message);
-  console.log("selectedQuestions", selectedQuestions);
+  console.log("URLDATA", urlData);
+  console.log("RES", responseFrom)
+  console.log("responseFrom", `This Response is Coming From Chatgpt ${selectedValue}`);
   console.log("pdfData", pdfData);
-  console.log("isSaveVisible", isSaveVisible)
+  console.log("message", message)
   console.log("URLDATA", urlData)
+  console.log("NewText", newText)
   
   
   return (
@@ -196,7 +203,7 @@ const RichTextEditor = () => {
                 <div className="questions" key={i}>
                   <input type="checkbox" onChange={(event) => handleCheckboxChange(event, question, answer, label)} />
                   <div className="question-text">
-                    {/* <h6 style={{color: '#dfdfdf'}}><strong style={{fontStyle: 'italic',}}>{ques.Label}</strong></h6> */}
+                    <h6 style={{color: '#dfdfdf'}}><strong style={{fontStyle: 'italic',}}>{ques.Label}</strong></h6>
                     <label htmlFor="">Q. {question}</label>
                     <p className='my-1'>Ans. {answer}</p>
                   </div>
@@ -213,9 +220,8 @@ const RichTextEditor = () => {
               
               <div className="question-text d-flex flex-column">
                 <h6 style={{color: '#dfdfdf'}}><strong style={{fontStyle: 'italic',}}>{responseFrom}</strong></h6>
-                <label htmlFor="">Q. {primaryInput}</label>
+                <label htmlFor="">Q. {predictionQues}</label>
                 <p className='my-1'>Ans. {newText}</p>
-                
               </div>
             </div>
           )
@@ -271,11 +277,13 @@ const RichTextEditor = () => {
         }
       </div>
         {
-          (urlData && urlData.length > 0 || message && message.length > 0 || newText && newText.length > 0 && pdfData.length === 0 || responseFrom ===` This Response is Coming From Chatgpt ${selectedValue}`) && (
+          (urlData && urlData.length > 0 || message && message.length > 0 || responseFrom == `This Response is Coming From Chatgpt ${selectedValue}` ? (
             <div className="save-content">
               <button className='save mb-3' onClick={(e) => handleDataSave(e)}>Save Data</button>
             </div>
           )
+          :
+          "")
         }
         
         <div className="search-bar input-container w-100 position-relative">
