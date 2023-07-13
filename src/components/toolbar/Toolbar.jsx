@@ -51,6 +51,7 @@ const RichTextEditor = () => {
           setText(response.data.Answer);
           setResponseFrom('')
           setResponseFrom(response.data.AnswerSource)
+          setPrimaryInput('')
           setPredictionQues(response.data.Question)
           console.log("response.data.AnswerSource", response.data.AnswerSource)
           setLabel(prevLabels => [...prevLabels, response.data.Label]);
