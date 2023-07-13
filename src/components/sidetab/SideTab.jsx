@@ -243,6 +243,9 @@ function Copy() {
             setMessage('')
             console.log("PDF response Data", response.data);
             setPdfData(response.data)
+            if(response.data.message) {
+                toast.warn("No data found")
+            }
         })
         .catch(function (error) {
             console.log(error)
