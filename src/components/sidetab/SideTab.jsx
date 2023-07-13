@@ -43,6 +43,9 @@ function Copy() {
     };
 
     const handleScrapping = () => {
+        if(URL == '') {
+            toast.warn("Please enter a URL")
+        }
         setText('');
         setPdfData('')
         setSelectedQuestions([])
@@ -101,6 +104,45 @@ function Copy() {
             toast.warn("Please select a database")
         }
     }
+
+    useEffect(() => {
+        axios.post(API.BASE_URL + 'label/', {
+            database_id: selectedValue
+        })
+        .then(function (response) {
+            console.log("Questions", response);
+            setQuestion(response.data.unique_label);
+            setQuestionId(response.data.unique_id)
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+
+        axios.post(API.BASE_URL + 'urldata/', {
+            database_id: selectedValue
+        })
+        .then(function (response) {
+            console.log("URL History", response);
+            const filteredLabels = response.data.labels.filter(label => label !== "");
+            setUrlHistory(filteredLabels);
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+        axios.post(API.BASE_URL + 'pdfdata/', {
+            database_id: selectedValue
+        })
+        .then(function (response) {
+            console.log("PDF Label", response);
+            const filteredLabels = response.data.pdffilename.filter(label => label !== null || "");
+            setPdfLabel(filteredLabels);
+            const filteredPdfLink = response.data.pdfdownload.filter(label => label !== null || "");
+            setPdfLink(filteredPdfLink);
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+    }, [])
 
     const handleButtonClick = (value) => {
         setSelectedValue(value);
@@ -186,6 +228,9 @@ function Copy() {
     }
 
     const getFileContent = () => {
+        if(fileCheck == '') {
+            toast.warn("Please upload a PDF")
+        }
         setLoading(true);
         setSelectedQuestions([])
         setUrlData('')

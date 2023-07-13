@@ -205,9 +205,9 @@ const RichTextEditor = () => {
                 <div className="questions" key={i}>
                   <input type="checkbox" onChange={(event) => handleCheckboxChange(event, question, answer, label)} />
                   <div className="question-text">
-                    <h6 style={{color: '#dfdfdf'}}><strong style={{fontStyle: 'italic',}}>{ques.Label}</strong></h6>
                     <label htmlFor="">Q. {question}</label>
                     <p className='my-1'>Ans. {answer}</p>
+                    <p><strong className='text-white'>Label.</strong> {ques.Label}</p>
                   </div>
                 </div>
               )
