@@ -29,7 +29,7 @@ function Login() {
             }})
             .then(function (response) {
                 console.log("UserProfile", response);
-                toast.success("Logged in Successfully!");
+                toast.success("Logged in Successfully!", { autoClose: 1000 });
                 localStorage.setItem("User_name", response.data.firstname)
                 localStorage.setItem("Check_is_admin", response.data.is_admin)
                 localStorage.setItem("User_ID", response.data.id)
@@ -37,15 +37,15 @@ function Login() {
             })
             .catch(function (error) {
                 console.log(error);
-                toast.error("Error during sign in");
+                toast.error("Error during sign in", { autoClose: 1000 });
             })
         })
         .catch(function (error) {
             console.log(error);
             if(error.message) {
-                toast.warn(error.message)
+                toast.warn(error.message, { autoClose: 1000 })
             }
-            toast.error("Error during sign in");
+            toast.error("Error during sign in", { autoClose: 1000 });
         })
         .finally(()=>setLoading(false))
     }

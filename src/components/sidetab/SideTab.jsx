@@ -44,7 +44,7 @@ function Copy() {
 
     const handleScrapping = () => {
         if(URL == '') {
-            toast.warn("Please enter a URL")
+            toast.warn("Please enter a URL", { autoClose: 1000 })
         }
         setText('');
         setPdfData('')
@@ -74,7 +74,7 @@ function Copy() {
             .catch(function (error) {
                 console.log(error);
                 if(response.data.message == "url is required") {
-                    toast.warn("Please enter the url")
+                    toast.warn("Please enter the url", { autoClose: 1000 })
                 }
             })
           })
@@ -92,16 +92,16 @@ function Copy() {
             })
         .then(function (response) {
             console.log("Train Data", response.data);
-            toast.success("Model Trained Successfully")
+            toast.success("Model Trained Successfully", { autoClose: 1000 })
         })
         .catch(function (error) {
             console.log(error)
-            toast.error('Error to train data')
+            toast.error('Error to train data', { autoClose: 1000 })
         })
         .finally(() => setLoading(false))
         }
         else {
-            toast.warn("Please select a database")
+            toast.warn("Please select a database", { autoClose: 1000 })
         }
     }
 
@@ -146,7 +146,7 @@ function Copy() {
 
     const handleButtonClick = (value) => {
         setSelectedValue(value);
-        toast.success("Database " + value + 'selected')
+        toast.success("Database " + value + 'selected', { autoClose: 1000 })
         axios.post(API.BASE_URL + 'label/', {
             database_id: value
         })
@@ -208,7 +208,7 @@ function Copy() {
         setPrimaryInput('')
         setResponseFrom('')
         localStorage.clear();
-        toast.success("User logged out")
+        toast.success("User logged out", { autoClose: 1000 })
         navigate('/');
         window.location.reload();
         //     navigate('/');
@@ -229,7 +229,7 @@ function Copy() {
 
     const getFileContent = () => {
         if(fileCheck == '') {
-            toast.warn("Please upload a PDF")
+            toast.warn("Please upload a PDF", { autoClose: 1000 })
         }
         setLoading(true);
         setSelectedQuestions([])
@@ -289,7 +289,7 @@ function Copy() {
             console.log("PDF response Data", response.data);
             setPdfData(response.data)
             if(response.data.message) {
-                toast.warn("No data found")
+                toast.warn("No data found", { autoClose: 1000 })
             }
         })
         .catch(function (error) {
@@ -307,7 +307,7 @@ function Copy() {
         })
         .then(function (response) {
             console.log("Delete Label", response);
-            toast.success("Label Deleted");
+            toast.success("Label Deleted", { autoClose: 1000 });
             axios.post(API.BASE_URL + 'label/', {
                 database_id: selectedValue
             })
@@ -385,7 +385,7 @@ function Copy() {
             <MDBTabs className='mb-3'>
                 <MDBTabsItem>
                 <MDBTabsLink onClick={() => handleBasicClick('tab1')} active={basicActive === 'tab1'}>
-                    Upload
+                    Home
                 </MDBTabsLink>
                 </MDBTabsItem>
                 <MDBTabsItem>

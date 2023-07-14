@@ -62,7 +62,7 @@ const RichTextEditor = () => {
       .finally(() => setLoading(false))
       }
       else {
-        toast.warn("Please select a database")
+        toast.warn("Please select a database", { autoClose: 1000 })
       }
   }
   
@@ -95,7 +95,7 @@ const RichTextEditor = () => {
     })
     .then(function (response) {
         console.log("Save Data", response.data);
-        toast.success('Data Saved Successfully');
+        toast.success('Data Saved Successfully', { autoClose: 1000 });
         axios.post(API.BASE_URL + 'label/', {
           database_id: selectedValue
       })
@@ -110,12 +110,12 @@ const RichTextEditor = () => {
     })
     .catch(function (error) {
         console.log(error)
-        toast.error('Error Saving Data')
+        toast.error('Error Saving Data', { autoClose: 1000 })
     })
     .finally(() => setLoading(false))
    }
    else {
-    toast.warn("Please select a database")
+    toast.warn("Please select a database", { autoClose: 1000 })
    }
   }
 
@@ -140,7 +140,7 @@ const RichTextEditor = () => {
     },)
     .then(function (response) {
         console.log("Data", response.data);
-        toast.success("Data Deleted");
+        toast.success("Data Deleted", { autoClose: 1000 });
         axios.post(API.BASE_URL + 'ShowData/', {
           id: singleLabelId,
           database_id: selectedValue

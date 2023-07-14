@@ -23,31 +23,31 @@ function Signup() {
         })
         .then(function (response) {
             console.log("SIGNUP", response)
-            toast.success("Sign up successfully");
+            toast.success("Sign up successfully", { autoClose: 1000 });
             navigate('/')
         })
         .catch(function (error) {
             console.log(error);
             if(error.response.data.firstname) {
-                toast.warn("Please provide First Name");
+                toast.warn("Please provide First Name", { autoClose: 1000 });
             }
             else if(error.response.data.lastname) {
-                toast.warn("Please provide Last Name");
+                toast.warn("Please provide Last Name", { autoClose: 1000 });
             }
             else if(error.response.data.password) {
-                toast.warn("Please provide Password");
+                toast.warn("Please provide Password", { autoClose: 1000 });
             }
             else if(error.response.data.email == "please provide a email") {
-                toast.warn("Please provide an Email");
+                toast.warn("Please provide an Email", { autoClose: 1000 });
             }
             else if(error.response.data.email == "Enter a valid email address.") {
-                toast.warn("Enter a valid email address");
+                toast.warn("Enter a valid email address", { autoClose: 1000 });
             }
             else if(error.response.data.email == "user with this email address already exists.") {
-                toast.warn("User with this email address already exists.");
+                toast.warn("User with this email address already exists.", { autoClose: 1000 });
             }
             else {
-                toast.warn("An error occurred, please try again later")
+                toast.warn("An error occurred, please try again later", { autoClose: 1000 })
             }
         })
         .finally(()=>setLoading(false))
