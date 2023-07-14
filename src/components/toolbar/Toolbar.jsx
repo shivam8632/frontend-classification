@@ -45,15 +45,15 @@ const RichTextEditor = () => {
         'Content-Type': 'multipart/form-data',
       },)
       .then(function (response) {
-          console.log("Data", response.data);
+          console.log("Dataaaaa", response.data);
           setMessage('');
           setText('');
-          setText(response.data.Answer);
           setResponseFrom('')
-          setResponseFrom(response.data.AnswerSource)
           setPrimaryInput('')
+          setText(response.data.Answer);
+          setResponseFrom(response.data.AnswerSource)
           setPredictionQues(response.data.Question)
-          console.log("response.data.AnswerSource", response.data.AnswerSource)
+          console.log("response.data.AnswerSource", response.data.Question)
           setLabel(prevLabels => [...prevLabels, response.data.Label]);
       })
       .catch(function (error) {
@@ -170,6 +170,7 @@ const RichTextEditor = () => {
   console.log("message", message)
   console.log("URLDATA", urlData)
   console.log("NewText", newText)
+  console.log("predictionQues", predictionQues)
   console.log("selectedQuestions",selectedQuestions)
   
   
@@ -217,7 +218,7 @@ const RichTextEditor = () => {
           newText && newText?.length > 0 && pdfData.length == 0 ? (
             <div className="questions">
               {(responseFrom == 'This Response is Coming From Chatgpt 1' || responseFrom == 'This Response is Coming From Chatgpt 2') && (
-                <input type="checkbox" onChange={(event) => handleCheckboxChange(event, primaryInput, newText, label[0])} />
+                <input type="checkbox" onChange={(event) => handleCheckboxChange(event, predictionQues, newText, label[0])} />
               )}
               
               <div className="question-text d-flex flex-column">
