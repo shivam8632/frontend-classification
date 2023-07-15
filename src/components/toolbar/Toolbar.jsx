@@ -18,6 +18,7 @@ const RichTextEditor = () => {
   const [isContentVisible, setContentVisible] = useState(false);
   const [isSaveVisible, setIsSaveVisible] = useState(false);
   const [labelDataId, setLabelDataId] = useState(null);
+  const [getLabel, setGetLabel] = useState('')
   
   const user_id = localStorage.getItem("User_ID");
   
@@ -37,6 +38,7 @@ const RichTextEditor = () => {
       setPdfData('')
       setNewText('')
       setResponseFrom('')
+      setSelectedQuestions([]);
       const formData = new FormData();
       formData.append('input',primaryInput);
       formData.append('user_id',user_id);
@@ -53,6 +55,7 @@ const RichTextEditor = () => {
           setText(response.data.Answer);
           setResponseFrom(response.data.AnswerSource)
           setPredictionQues(response.data.Question)
+          setGetLabel(response.data.Label)
           console.log("response.data.AnswerSource", response.data.Question)
           setLabel(prevLabels => [...prevLabels, response.data.Label]);
       })
@@ -218,7 +221,7 @@ const RichTextEditor = () => {
           newText && newText?.length > 0 && pdfData.length == 0 ? (
             <div className="questions">
               {(responseFrom == 'This Response is Coming From Chatgpt 1' || responseFrom == 'This Response is Coming From Chatgpt 2') && (
-                <input type="checkbox" onChange={(event) => handleCheckboxChange(event, predictionQues, newText, label[0])} />
+                <input type="checkbox" onChange={(event) => handleCheckboxChange(event, predictionQues, newText, getLabel)} />
               )}
               
               <div className="question-text d-flex flex-column">
