@@ -52,6 +52,17 @@ const RichTextEditor = () => {
           setText('');
           setResponseFrom('')
           setPrimaryInput('')
+          axios.post(API.BASE_URL + 'label/', {
+            database_id: selectedValue
+        })
+        .then(function (response) {
+            console.log("Questions", response);
+            setQuestion(response.data.unique_label);
+            setQuestionId(response.data.unique_id)
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
           setText(response.data.Answer);
           setResponseFrom(response.data.AnswerSource)
           setPredictionQues(response.data.Question)
@@ -221,7 +232,7 @@ const RichTextEditor = () => {
           newText && newText?.length > 0 && pdfData.length == 0 ? (
             <div className="questions">
               {(responseFrom == 'This Response is Coming From Chatgpt 1' || responseFrom == 'This Response is Coming From Chatgpt 2') && (
-                <input type="checkbox" onChange={(event) => handleCheckboxChange(event, predictionQues, newText, getLabel)} />
+                <input type="checkbox" onChange={(event) => handleCheckboxChange(event, predictionQues, newText, getLabel )} />
               )}
               
               <div className="question-text d-flex flex-column">
