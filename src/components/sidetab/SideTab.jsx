@@ -390,7 +390,8 @@ function Copy() {
                 <div className="buttons d-flex flex-wrap">
                 <button className={selectedValue === 1 ? 'selected' : ''} onClick={() => handleButtonClick(1)}>Database 1</button>
                 <button className={selectedValue === 2 ? 'selected' : ''} onClick={() => handleButtonClick(2)}>Database 2</button>
-                    <select className='mt-4'>
+                    <div className="user-select w-100 mt-4 d-flex justify-content-center">
+                    <select>
                         <option value="">User Databases</option>
                         {userDatabase?.length > 0 && (
                             userDatabase.map((database, i) => {
@@ -400,6 +401,7 @@ function Copy() {
                             })
                         )}
                     </select>
+                    </div>
                 </div>
             )}
             
