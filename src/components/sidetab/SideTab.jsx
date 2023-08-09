@@ -13,6 +13,7 @@ import {
     MDBTabsContent,
     MDBTabsPane
   } from 'mdb-react-ui-kit';
+import { is } from 'immutable';
 
 function Copy() {
     const {selectedValue, setSingleLabelId, setSelectedValue, pdfLabel, setPdfLabel, urlHistory, setUrlHistory, setUrlData,label, setText, token, questions, setQuestion, text, message, setMessage,setNewText, newText, fileCheck, setResponseFrom, setPredictionQues, setFileCheck, setPrimaryInput, URL, setUrl,pdfData, setPdfData, questionId, setQuestionId, selectedQuestions, setSelectedQuestions} = useContext(UserContext)
@@ -28,7 +29,8 @@ function Copy() {
     const user =  localStorage.getItem("User_name");
     const checkAdmin = localStorage.getItem("Check_is_admin");
     const user_id = localStorage.getItem("User_ID");
-    console.log("checkAdmin", isContentVisible);
+    const [userDatabase, setUserDatabase] = useState([]);
+    console.log("checkAdmin", checkAdmin);
     const navigate = useNavigate();
     const handleBasicClick = (value) => {
         if (value === basicActive) {
@@ -68,8 +70,7 @@ function Copy() {
             })
             .then(function (response) {
                 console.log("URL History", response);
-                const filteredLabels = response.data.labels.filter(label => label !== "");
-                setUrlHistory(filteredLabels);
+                setUrlHistory(response.data.data);
             })
             .catch(function (error) {
                 console.log(error);
@@ -87,18 +88,35 @@ function Copy() {
     const handleTrainData = (e) => {
         if(selectedValue != null) {
             setLoading(true);
-        axios.post(API.BASE_URL + 'finaltrainmodel/', {
-            database_id: selectedValue,
+        if(checkAdmin == 'true') {
+            axios.post(API.BASE_URL + 'finaltrainmodel/', {
+                database_id: selectedValue,
             })
-        .then(function (response) {
-            console.log("Train Data", response.data);
-            toast.success("Model Trained Successfully", { autoClose: 1000 })
-        })
-        .catch(function (error) {
-            console.log(error)
-            toast.error('Error to train data', { autoClose: 1000 })
-        })
-        .finally(() => setLoading(false))
+            .then(function (response) {
+                console.log("Train Data", response.data);
+                toast.success("Model Trained Successfully", { autoClose: 1000 })
+            })
+            .catch(function (error) {
+                console.log(error)
+                toast.error('Error to train data', { autoClose: 1000 })
+            })
+            .finally(() => setLoading(false))
+        }
+        else {
+            axios.post(API.BASE_URL + 'userdatabase/', {
+                user_id: user_id,
+            })
+            .then(function (response) {
+                console.log("Train Data", response.data);
+                toast.success("Model Trained Successfully", { autoClose: 1000 })
+            })
+            .catch(function (error) {
+                console.log(error)
+                toast.error('Error to train data', { autoClose: 1000 })
+            })
+            .finally(() => setLoading(false))
+        }
+        
         }
         else {
             toast.warn("Please select a database", { autoClose: 1000 })
@@ -106,83 +124,119 @@ function Copy() {
     }
 
     useEffect(() => {
-        axios.post(API.BASE_URL + 'label/', {
-            database_id: selectedValue
-        })
-        .then(function (response) {
-            console.log("Questions", response);
-            setQuestion(response.data.unique_label);
-            setQuestionId(response.data.unique_id)
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
+        if(checkAdmin == 'true') {
+            axios.post(API.BASE_URL + 'label/', {
+                database_id: selectedValue
+            })
+            .then(function (response) {
+                console.log("Questions", response);
+                setQuestion(response.data.data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+    
+            axios.post(API.BASE_URL + 'urldata/', {
+                database_id: selectedValue
+            })
+            .then(function (response) {
+                console.log("URL History", response);
+                setUrlHistory(response.data.data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+            axios.post(API.BASE_URL + 'pdfdata/', {
+                database_id: selectedValue
+            })
+            .then(function (response) {
+                console.log("PDF Label", response);
+                setPdfLabel(response.data.data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+        }
+    }, [])
 
-        axios.post(API.BASE_URL + 'urldata/', {
-            database_id: selectedValue
-        })
-        .then(function (response) {
-            console.log("URL History", response);
-            const filteredLabels = response.data.labels.filter(label => label !== "");
-            setUrlHistory(filteredLabels);
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
-        axios.post(API.BASE_URL + 'pdfdata/', {
-            database_id: selectedValue
-        })
-        .then(function (response) {
-            console.log("PDF Label", response);
-            const filteredLabels = response.data.pdffilename.filter(label => label !== null || "");
-            setPdfLabel(filteredLabels);
-            const filteredPdfLink = response.data.pdfdownload.filter(label => label !== null || "");
-            setPdfLink(filteredPdfLink);
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
+    useEffect(() => {
+        if(checkAdmin == 'false') {
+            axios.post(API.BASE_URL + 'userlabel/', {
+            user_id: user_id
+            })
+            .then(function (response) {
+                console.log("User Label", response);
+                setQuestion(response.data.data)
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+        }
+        
+    }, [])
+
+    useEffect(() => {
+        if(checkAdmin == 'true') {
+            axios.get(API.BASE_URL + 'alluserdata/')
+            .then(function (response) {
+                console.log("User Database", response);
+                setUserDatabase(response.data.user_database)
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+        }
+        
     }, [])
 
     const handleButtonClick = (value) => {
         setSelectedValue(value);
         toast.success("Database " + value + 'selected', { autoClose: 1000 })
-        axios.post(API.BASE_URL + 'label/', {
-            database_id: value
-        })
-        .then(function (response) {
-            console.log("Questions", response);
-            setQuestion(response.data.unique_label);
-            setQuestionId(response.data.unique_id)
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
-
-        axios.post(API.BASE_URL + 'urldata/', {
-            database_id: value
-        })
-        .then(function (response) {
-            console.log("URL History", response);
-            const filteredLabels = response.data.labels.filter(label => label !== "");
-            setUrlHistory(filteredLabels);
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
-        axios.post(API.BASE_URL + 'pdfdata/', {
-            database_id: value
-        })
-        .then(function (response) {
-            console.log("PDF Label", response);
-            const filteredLabels = response.data.pdffilename.filter(label => label !== null || "");
-            setPdfLabel(filteredLabels);
-            const filteredPdfLink = response.data.pdfdownload.filter(label => label !== null || "");
-            setPdfLink(filteredPdfLink);
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
+        if(checkAdmin == 'true') {
+            axios.post(API.BASE_URL + 'label/', {
+                database_id: value
+            })
+            .then(function (response) {
+                console.log("Questions", response);
+                setQuestion(response.data.data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+    
+            axios.post(API.BASE_URL + 'urldata/', {
+                database_id: value
+            })
+            .then(function (response) {
+                console.log("URL History", response);
+                setUrlHistory(response.data.data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+            axios.post(API.BASE_URL + 'pdfdata/', {
+                database_id: value
+            })
+            .then(function (response) {
+                console.log("PDF Label", response);
+                setPdfLabel(response.data.data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+        }
+        else {
+            axios.post(API.BASE_URL + 'userlabel/', {
+                user_id: user_id
+                })
+                .then(function (response) {
+                    console.log("User Label", response);
+                    setQuestion(response.data.data)
+                })
+                .catch(function (error) {
+                    console.log(error);
+                })
+        }
     };
 
     console.log("selectedValue" ,selectedValue)
@@ -211,20 +265,6 @@ function Copy() {
         toast.success("User logged out", { autoClose: 1000 })
         navigate('/');
         window.location.reload();
-        //     navigate('/');
-        // axios.post(API.BASE_URL + 'logout/', {}, {
-        //     headers: {
-        //     Authorization: `Bearer ${token}`
-        // }})
-        // .then(function (response) {
-        //     console.log("Logout", response);
-        //     localStorage.clear();
-        //     toast.success("User logged out")
-        //     navigate('/');
-        // })
-        // .catch(function (error) {
-        //     console.log(error);
-        // })
     }
 
     const getFileContent = () => {
@@ -252,10 +292,7 @@ function Copy() {
             })
             .then(function (response) {
                 console.log("PDF Label", response);
-                const filteredLabels = response.data.pdffilename.filter(label => label !== null || "");
-                setPdfLabel(filteredLabels);
-                const filteredPdfLink = response.data.pdfdownload.filter(label => label !== null || "");
-                setPdfLink(filteredPdfLink);
+                setPdfLabel(response.data.data);
             })
             .catch(function (error) {
                 console.log(error);
@@ -313,8 +350,7 @@ function Copy() {
             })
             .then(function (response) {
                 console.log("Questions", response);
-                setQuestion(response.data.unique_label);
-                setQuestionId(response.data.unique_id)
+                setQuestion(response.data.data);
             })
             .catch(function (error) {
                 console.log(error);
@@ -340,8 +376,8 @@ function Copy() {
 
     console.log("URLHOSTORY", urlHistory)
     console.log('Questions Data', questions)
-    console.log("pdfLink", pdfLink?.length)
-    console.log("pdfData", pdfLabel?.length)
+    console.log("pdfData", pdfLabel)
+    console.log("lnkllm", questions)
     
 
   return (
@@ -350,13 +386,28 @@ function Copy() {
 
         <div className='intro'>
             <p className='text-white user'>Welcome, <strong>{user? user : 'User'}</strong></p>
-            <div className="buttons d-flex">
-            <button className={selectedValue === 1 ? 'selected' : ''} onClick={() => handleButtonClick(1)}>Database 1</button>
-            <button className={selectedValue === 2 ? 'selected' : ''} onClick={() => handleButtonClick(2)}>Database 2</button>
-            </div>
+            {checkAdmin != 'false' && (
+                <div className="buttons d-flex flex-wrap">
+                <button className={selectedValue === 1 ? 'selected' : ''} onClick={() => handleButtonClick(1)}>Database 1</button>
+                <button className={selectedValue === 2 ? 'selected' : ''} onClick={() => handleButtonClick(2)}>Database 2</button>
+                    <select className='mt-4'>
+                        <option value="">User Databases</option>
+                        {userDatabase?.length > 0 && (
+                            userDatabase.map((database, i) => {
+                                return(
+                                    <option key={i} value={database.user_id}>{database.database_name}</option>
+                                )
+                            })
+                        )}
+                    </select>
+                </div>
+            )}
+            
         </div>
         {checkAdmin != 'true' ? (
             questions?.length > 0 ? (
+                <>
+                <h3 className='text-white px-4'>Label</h3>
                 <ul className='p-4'>
                     {questions?.map((text) => {
                         return(
@@ -374,11 +425,12 @@ function Copy() {
                                         marginRight: 10
                                     }}
                                 /> 
-                                {text}
+                                {text.topic_name}
                             </li>
                         )
                     })}
                 </ul>
+                </>
             ) : (<p className='mb-0 d-flex h-100 justify-content-center align-items-center fs-6' style={{color: '#6c6c72'}}>No Search History</p>)
         ) : (
             <>
@@ -435,15 +487,15 @@ function Copy() {
                         {questions?.length > 0 ? (
                             <ul className='py-4 px-0'>
                                 {questions?.map((text, i) => {
-                                    const liClass = questionId[i] === activeId && pdfData?.length > 0? 'active' : '';
+                                    const liClass = text.id[i] === activeId && pdfData?.length > 0? 'active' : '';
                                     
                                     return(
-                                        text != '' && (
+                                        text.topic_name != '' && (
                                             <>
                                             <li
                                                 className={`text-white d-flex align-items-center ${liClass}`}
                                                 style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', position: 'relative', zIndex: 2,}}
-                                                onClick={() => {setActiveId(questionId[i]);handleShowData(questionId[i])}}
+                                                onClick={() => {setActiveId(text.id[i]);handleShowData(text.id[i])}}
                                                 > <FontAwesomeIcon 
                                                 icon={faMessage}
                                                 style={{
@@ -453,7 +505,7 @@ function Copy() {
                                                     marginRight: 10
                                                 }}
                                             />
-                                            {text}
+                                            {text.topic_name}
                                                 <FontAwesomeIcon 
                                                     icon={faShare}
                                                     style={{
@@ -464,7 +516,7 @@ function Copy() {
                                                         marginRight: 30,
                                                     }}
                                                 /> 
-                                                <button className='delete-icon' onClick={(e) => {handleShowPopup(e, questionId[i])}}
+                                                <button className='delete-icon' onClick={(e) => {handleShowPopup(e, text.id[i])}}
                                                 style={{
                                                     position: 'relative',
                                                     zIndex: 4,
@@ -532,10 +584,10 @@ function Copy() {
 
                 <MDBTabsPane show={basicActive === 'tab3'}>
                     <ul className="p-0">
-                        {pdfLabel?.message == "Data Not Found" || pdfLink?.length > 0 ? (
+                        {pdfLabel.length > 0 ? (
                             pdfLabel?.map((history, i) => {
                                 return (
-                                <a href={pdfLink[i]} download={pdfLink[i]} target="_blank" style={{textDecoration: 'none'}}>
+                                <a href={history.pdf[i]} download={history.pdf[i]} target="_blank" style={{textDecoration: 'none'}}>
                                     <li className='text-white d-flex align-items-center' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}>
                                     <FontAwesomeIcon 
                                         icon={faMessage}
@@ -546,7 +598,7 @@ function Copy() {
                                         marginRight: 10
                                         }}
                                     />
-                                    {history}
+                                    {history.pdf_filename}
                                     <FontAwesomeIcon 
                                             icon={faDownload}
                                             style={{
@@ -618,12 +670,14 @@ function Copy() {
             </>
         )}
 
+        {/* {checkAdmin != 'false' && ( */}
             <div className="train-content">
               <button className='save mb-3' onClick={() => handleTrainData(true)}>Train Model</button>
             </div>
-        <div className="logout mt-auto">
-            <button type='button' className='button' onClick={() => {handleLogout()}}>Logout</button>
-        </div>
+        {/* )} */}
+            <div className="logout mt-auto">
+                <button type='button' className='button' onClick={() => {handleLogout()}}>Logout</button>
+            </div>
     </div>
   )
 }

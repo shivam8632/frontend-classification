@@ -19,6 +19,7 @@ const RichTextEditor = () => {
   const [isSaveVisible, setIsSaveVisible] = useState(false);
   const [labelDataId, setLabelDataId] = useState(null);
   const [getLabel, setGetLabel] = useState('')
+  const checkAdmin = localStorage.getItem("Check_is_admin");
   
   const user_id = localStorage.getItem("User_ID");
   
@@ -40,44 +41,81 @@ const RichTextEditor = () => {
       setResponseFrom('')
       setSelectedQuestions([]);
       const formData = new FormData();
-      formData.append('input',primaryInput);
-      formData.append('user_id',user_id);
-      formData.append('database_id', selectedValue)
-      axios.post(API.BASE_URL + 'finalprediction/', formData, {
-        'Content-Type': 'multipart/form-data',
-      },)
-      .then(function (response) {
-          console.log("Dataaaaa", response.data);
-          setMessage('');
-          setText('');
-          setResponseFrom('')
-          setPrimaryInput('')
-          axios.post(API.BASE_URL + 'label/', {
-            database_id: selectedValue
+      if(checkAdmin == 'true') {
+        formData.append('input',primaryInput);
+        formData.append('user_id',user_id);
+        formData.append('database_id', selectedValue)
+        axios.post(API.BASE_URL + 'finalprediction/', formData, {
+          'Content-Type': 'multipart/form-data',
         })
         .then(function (response) {
-            console.log("Questions", response);
-            setQuestion(response.data.unique_label);
-            setQuestionId(response.data.unique_id)
+            console.log("Dataaaaa", response.data);
+            setMessage('');
+            setText('');
+            setResponseFrom('')
+            setPrimaryInput('')
+            axios.post(API.BASE_URL + 'label/', {
+              database_id: selectedValue
+          })
+          .then(function (response) {
+              console.log("Questions", response);
+              setQuestion(response.data.data);
+          })
+          .catch(function (error) {
+              console.log(error);
+          })
+            setText(response.data.Answer);
+            setResponseFrom(response.data.AnswerSource)
+            setPredictionQues(response.data.Question)
+            setGetLabel(response.data.Label)
+            console.log("response.data.AnswerSource", response.data.Question)
+            setLabel(prevLabels => [...prevLabels, response.data.Label]);
         })
         .catch(function (error) {
-            console.log(error);
+            console.log(error)
         })
-          setText(response.data.Answer);
-          setResponseFrom(response.data.AnswerSource)
-          setPredictionQues(response.data.Question)
-          setGetLabel(response.data.Label)
-          console.log("response.data.AnswerSource", response.data.Question)
-          setLabel(prevLabels => [...prevLabels, response.data.Label]);
-      })
-      .catch(function (error) {
-          console.log(error)
-      })
-      .finally(() => setLoading(false))
+
+        .finally(() => setLoading(false))
       }
       else {
-        toast.warn("Please select a database", { autoClose: 1000 })
-      }
+        formData.append('user_input',primaryInput);
+        formData.append('user_id',user_id);
+        axios.post(API.BASE_URL + 'userprediction/', formData, {
+          'Content-Type': 'multipart/form-data',
+        })
+        .then(function (response) {
+            console.log("Dataaaaa", response.data);
+            setMessage('');
+            setText('');
+            setResponseFrom('')
+            setPrimaryInput('')
+            axios.post(API.BASE_URL + 'label/', {
+              database_id: selectedValue
+          })
+          .then(function (response) {
+              console.log("Questions", response);
+              setQuestion(response.data.data);
+          })
+          .catch(function (error) {
+              console.log(error);
+          })
+            setText(response.data.Answer);
+            setResponseFrom(response.data.AnswerSource)
+            setPredictionQues(response.data.Question)
+            setGetLabel(response.data.Label)
+            console.log("response.data.AnswerSource", response.data.Question)
+            setLabel(prevLabels => [...prevLabels, response.data.Label]);
+        })
+        .catch(function (error) {
+            console.log(error)
+        })
+        .finally(() => setLoading(false))
+        }
+
+    }
+    else {
+      toast.warn("Please select a database", { autoClose: 1000 })
+    }
   }
   
   const handleKeyPress = (e) => {
@@ -115,8 +153,7 @@ const RichTextEditor = () => {
       })
         .then(function (response) {
             console.log("Questions", response);
-            setQuestion(response.data.unique_label);
-            setQuestionId(response.data.unique_id);
+            setQuestion(response.data.data);
         })
         .catch(function (error) {
             console.log(error);

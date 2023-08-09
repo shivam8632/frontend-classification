@@ -23,8 +23,19 @@ function Signup() {
         })
         .then(function (response) {
             console.log("SIGNUP", response)
-            toast.success("Sign up successfully", { autoClose: 1000 });
-            navigate('/')
+            axios.post(API.BASE_URL + 'createdatabase/', {
+                user_id: response.data.user_id,
+            })
+            .then(function (response) {
+                console.log("Database Created", response)
+                toast.success("Sign up successfully", { autoClose: 1000 });
+                navigate('/')
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+            
+            // navigate('/')
         })
         .catch(function (error) {
             console.log(error);
