@@ -79,7 +79,7 @@ const RichTextEditor = () => {
       }
       else {
         formData.append('user_input',primaryInput);
-        formData.append('user_id',2);
+        formData.append('user_id', user_id);
         axios.post(API.BASE_URL + 'userprediction/', formData, {
           'Content-Type': 'multipart/form-data',
         })
