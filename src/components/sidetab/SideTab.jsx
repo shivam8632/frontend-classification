@@ -123,8 +123,9 @@ function Copy() {
     }
 
     useEffect(() => {
-        if(checkAdmin == 'true') {
-            axios.post(API.BASE_URL + 'label/', {
+        if(checkAdmin == 'true' && selectedValue) {
+            console.log("Selected Value Changed:", selectedValue);
+            axios.post(API.BASE_URL + 'adminlabeldata/', {
                 database_id: selectedValue
             })
             .then(function (response) {
@@ -156,7 +157,7 @@ function Copy() {
                 console.log(error);
             })
         }
-    }, [])
+    }, [selectedValue])
 
     useEffect(() => {
         if(checkAdmin == 'false') {
@@ -192,7 +193,7 @@ function Copy() {
         setSelectedValue(value);
         toast.success("Database " + value + 'selected', { autoClose: 1000 })
         if(checkAdmin == 'true') {
-            axios.post(API.BASE_URL + 'label/', {
+            axios.post(API.BASE_URL + 'adminlabeldata/', {
                 database_id: value
             })
             .then(function (response) {
@@ -344,7 +345,7 @@ function Copy() {
         .then(function (response) {
             console.log("Delete Label", response);
             toast.success("Label Deleted", { autoClose: 1000 });
-            axios.post(API.BASE_URL + 'label/', {
+            axios.post(API.BASE_URL + 'adminlabeldata/', {
                 database_id: selectedValue
             })
             .then(function (response) {
@@ -387,15 +388,15 @@ function Copy() {
             <p className='text-white user'>Welcome, <strong>{user? user : 'User'}</strong></p>
             {checkAdmin != 'false' && (
                 <div className="buttons d-flex flex-wrap">
-                <button className={selectedValue === 1 ? 'selected' : ''} onClick={() => handleButtonClick(1)}>Database 1</button>
-                <button className={selectedValue === 2 ? 'selected' : ''} onClick={() => handleButtonClick(2)}>Database 2</button>
+                {/* <button className={selectedValue === 1 ? 'selected' : ''} onClick={() => handleButtonClick(1)}>Database 1</button>
+                <button className={selectedValue === 2 ? 'selected' : ''} onClick={() => handleButtonClick(2)}>Database 2</button> */}
                     <div className="user-select w-100 mt-4 d-flex justify-content-center">
-                    <select>
+                    <select value={selectedValue} onChange={(e) => {setSelectedValue(e.target.value)}}>
                         <option value="">User Databases</option>
                         {userDatabase?.length > 0 && (
                             userDatabase.map((database, i) => {
                                 return(
-                                    <option key={i} value={database.user_id}>{database.database_name}</option>
+                                    <option key={i} value={database.id}>{database.database_name}</option>
                                 )
                             })
                         )}
