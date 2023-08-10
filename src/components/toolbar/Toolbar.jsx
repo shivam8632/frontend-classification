@@ -79,7 +79,7 @@ const RichTextEditor = () => {
       }
       else {
         formData.append('user_input',primaryInput);
-        formData.append('user_id',user_id);
+        formData.append('user_id',2);
         axios.post(API.BASE_URL + 'userprediction/', formData, {
           'Content-Type': 'multipart/form-data',
         })
@@ -99,12 +99,12 @@ const RichTextEditor = () => {
           .catch(function (error) {
               console.log(error);
           })
-            setText(response.data.Answer);
-            setResponseFrom(response.data.AnswerSource)
-            setPredictionQues(response.data.Question)
-            setGetLabel(response.data.Label)
-            console.log("response.data.AnswerSource", response.data.Question)
-            setLabel(prevLabels => [...prevLabels, response.data.Label]);
+            setText(response.data.message.Answer);
+            setResponseFrom(response.data.message.AnswerSource)
+            setPredictionQues(response.data.message.Question)
+            setGetLabel(response.data.message.Label)
+            console.log("response.data.AnswerSource", response.data.message.Question)
+            setLabel(prevLabels => [...prevLabels, response.data.message.Label]);
         })
         .catch(function (error) {
             console.log(error)

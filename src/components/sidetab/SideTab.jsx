@@ -13,7 +13,6 @@ import {
     MDBTabsContent,
     MDBTabsPane
   } from 'mdb-react-ui-kit';
-import { is } from 'immutable';
 
 function Copy() {
     const {selectedValue, setSingleLabelId, setSelectedValue, pdfLabel, setPdfLabel, urlHistory, setUrlHistory, setUrlData,label, setText, token, questions, setQuestion, text, message, setMessage,setNewText, newText, fileCheck, setResponseFrom, setPredictionQues, setFileCheck, setPrimaryInput, URL, setUrl,pdfData, setPdfData, questionId, setQuestionId, selectedQuestions, setSelectedQuestions} = useContext(UserContext)
