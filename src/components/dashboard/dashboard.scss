@@ -33,34 +33,32 @@
                         }
                     }
                 }
-                .tab-content {
-                    li {
-                        padding: .8rem 1rem;
-                        cursor: pointer;
-                    }
-                    li.active {
-                        background-color: #353536ba;
-                    }
-                    ul {
-                        .url-share {
-                            position: relative;
+                li {
+                    padding: .8rem 1rem;
+                    cursor: pointer;
+                }
+                li.active {
+                    background-color: #353536ba;
+                }
+                ul {
+                    .url-share {
+                        position: relative;
+                        transition: .5s ease-in-out;
+                        color: inherit;
+                                text-decoration: none;
+                        
+                        
+                        svg.share {
+                            display: none;
+                            position: absolute;
+                            top: 13px;
+                            right: 10px;
                             transition: .5s ease-in-out;
-                            color: inherit;
-                                    text-decoration: none;
-                            
-                            
+                        }
+                        &:hover {
+                            transition: .5s ease-in-out;
                             svg.share {
-                                display: none;
-                                position: absolute;
-                                top: 13px;
-                                right: 10px;
-                                transition: .5s ease-in-out;
-                            }
-                            &:hover {
-                                transition: .5s ease-in-out;
-                                svg.share {
-                                    display: block;
-                                }
+                                display: block;
                             }
                         }
                     }

@@ -162,7 +162,7 @@ function Copy() {
     useEffect(() => {
         if(checkAdmin == 'false') {
             axios.post(API.BASE_URL + 'userlabel/', {
-            user_id: user_id
+            user_id: '2'
             })
             .then(function (response) {
                 console.log("User Label", response);
@@ -314,9 +314,9 @@ function Copy() {
         setMessage('')
         console.log("ID", id)
         setSingleLabelId(id)
-        axios.post(API.BASE_URL + 'ShowData/', {
-            id: id,
-            database_id: selectedValue
+        axios.post(API.BASE_URL + 'userlabeldata/', {
+            label_id: id,
+            user_id: '2'
         })
         .then(function (response) {
             setPrimaryInput('');
@@ -324,7 +324,7 @@ function Copy() {
             setNewText('')
             setMessage('')
             console.log("PDF response Data", response.data);
-            setPdfData(response.data)
+            setPdfData(response.data.data)
             if(response.data.message) {
                 toast.warn("No data found", { autoClose: 1000 })
             }
@@ -378,6 +378,7 @@ function Copy() {
     console.log('Questions Data', questions)
     console.log("pdfData", pdfLabel)
     console.log("lnkllm", questions)
+    console.log("label id", activeId)
     
 
   return (
@@ -410,28 +411,100 @@ function Copy() {
             questions?.length > 0 ? (
                 <>
                 <h3 className='text-white px-4'>Label</h3>
-                <ul className='p-4'>
-                    {questions?.map((text) => {
-                        return(
-                            <li 
-                            className='text-white d-flex align-items-center mb-4' 
-                            style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}
-                            
-                            >
-                                <FontAwesomeIcon 
-                                    icon={faMessage}
-                                    style={{
-                                        color: "#fff",
-                                        width: "15px",
-                                        height: "15px",
-                                        marginRight: 10
-                                    }}
-                                /> 
-                                {text.topic_name}
-                            </li>
-                        )
-                    })}
-                </ul>
+                <>
+                    {questions?.length > 0 ? (
+                        <ul className='py-4 px-0'>
+                            {questions?.map((text, i) => {
+                                return(
+                                    text.topic_name != '' && (
+                                        <>
+                                            <li
+                                                className={`text-white d-flex align-items-center ${activeId === text.id ? 'active' : ''}`}
+                                                style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', position: 'relative', zIndex: 2,}}
+                                                onClick={() => {setActiveId(text.id);handleShowData(text.id)}}
+                                                > <FontAwesomeIcon 
+                                                icon={faMessage}
+                                                style={{
+                                                    color: "#fff",
+                                                    width: "15px",
+                                                    height: "15px",
+                                                    marginRight: 10
+                                                }}
+                                            />
+                                                {text.topic_name}
+                                                <FontAwesomeIcon 
+                                                    icon={faShare}
+                                                    style={{
+                                                        color: "#fff",
+                                                        width: "20px",
+                                                        height: "20px",
+                                                        marginLeft: 'auto',
+                                                        marginRight: 30,
+                                                    }}
+                                                /> 
+                                                <button className='delete-icon' onClick={(e) => {handleShowPopup(e, text.id[i])}}
+                                                    style={{
+                                                        position: 'relative',
+                                                        zIndex: 4,
+                                                        right: 0,
+                                                        top: 0,
+                                                        bottom: 0,
+                                                    }}>
+                                                        <FontAwesomeIcon 
+                                                            icon={faTrash}
+                                                            style={{
+                                                                color: "#fff",
+                                                                width: "20px",
+                                                                height: "20px",
+                                                            }}
+                                                        />
+                                                </button>
+                                                {
+                                                    isContentVisible && (
+                                                        <div className="popup">
+                                                            <div className="popup-content">
+                                                                <h2> Do you want to delete label?</h2>
+                                                                <p>Deleting will remove the label from database</p>
+                                                                <div className="buttons">
+                                                                    <button className="btn" onClick={() => {handleLabelDelete()}}>Delete</button>
+                                                                    <button className="btn" onClick={(e) => handleClosePopup(e)}>Cancel</button>
+                                                                </div>
+                                                                <button className="close" onClick={(e) => handleClosePopup(e)}>
+                                                                    <FontAwesomeIcon
+                                                                    icon={faClose}
+                                                                    style={{ color: '#000', width: '25px', height: '25px' }}
+                                                                    />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                }
+                                            </li>
+                                        </>
+                                    )
+                                )
+                            })}
+                        </ul>
+                    ) :
+                        selectedValue == null ? (
+                        <h5
+                        className='d-flex justify-content-center align-items-center text-white'
+                        style={{
+                            minHeight: '70vh',
+                            margin: 0,
+                        }}
+                        >Select a database</h5>)
+                    :
+                        <h5
+                        className='d-flex justify-content-center align-items-center text-white'
+                        style={{
+                            minHeight: '70vh',
+                            margin: 0,
+                        }}
+                        >No Label Found</h5>
+                        }
+                    
+                    </>
                 </>
             ) : (<p className='mb-0 d-flex h-100 justify-content-center align-items-center fs-6' style={{color: '#6c6c72'}}>No Search History</p>)
         ) : (
@@ -489,75 +562,73 @@ function Copy() {
                         {questions?.length > 0 ? (
                             <ul className='py-4 px-0'>
                                 {questions?.map((text, i) => {
-                                    const liClass = text.id[i] === activeId && pdfData?.length > 0? 'active' : '';
                                     
                                     return(
                                         text.topic_name != '' && (
                                             <>
-                                            <li
-                                                className={`text-white d-flex align-items-center ${liClass}`}
-                                                style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', position: 'relative', zIndex: 2,}}
-                                                onClick={() => {setActiveId(text.id[i]);handleShowData(text.id[i])}}
-                                                > <FontAwesomeIcon 
-                                                icon={faMessage}
-                                                style={{
-                                                    color: "#fff",
-                                                    width: "15px",
-                                                    height: "15px",
-                                                    marginRight: 10
-                                                }}
-                                            />
-                                            {text.topic_name}
-                                                <FontAwesomeIcon 
-                                                    icon={faShare}
+                                                <li
+                                                    className={`text-white d-flex align-items-center ${activeId === text.id ? 'active' : ''}`}
+                                                    style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', position: 'relative', zIndex: 2,}}
+                                                    onClick={() => {setActiveId(text.id);handleShowData(text.id)}}
+                                                    > <FontAwesomeIcon 
+                                                    icon={faMessage}
                                                     style={{
                                                         color: "#fff",
-                                                        width: "20px",
-                                                        height: "20px",
-                                                        marginLeft: 'auto',
-                                                        marginRight: 30,
+                                                        width: "15px",
+                                                        height: "15px",
+                                                        marginRight: 10
                                                     }}
-                                                /> 
-                                                <button className='delete-icon' onClick={(e) => {handleShowPopup(e, text.id[i])}}
-                                                style={{
-                                                    position: 'relative',
-                                                    zIndex: 4,
-                                                    right: 0,
-                                                    top: 0,
-                                                    bottom: 0,
-                                                }}>
+                                                />
+                                                {text.topic_name}
                                                     <FontAwesomeIcon 
-                                                        icon={faTrash}
+                                                        icon={faShare}
                                                         style={{
                                                             color: "#fff",
                                                             width: "20px",
                                                             height: "20px",
+                                                            marginLeft: 'auto',
+                                                            marginRight: 30,
                                                         }}
-                                                    />
-                                                </button>
-                                                {
-                                                isContentVisible && (
-                                                  <div className="popup">
-                                                    <div className="popup-content">
-                                                        <h2> Do you want to delete label?</h2>
-                                                        <p>Deleting will remove the label from database</p>
-                                                        <div className="buttons">
-                                                            <button className="btn" onClick={() => {handleLabelDelete()}}>Delete</button>
-                                                            <button className="btn" onClick={(e) => handleClosePopup(e)}>Cancel</button>
+                                                    /> 
+                                                    <button className='delete-icon' onClick={(e) => {handleShowPopup(e, text.id[i])}}
+                                                    style={{
+                                                        position: 'relative',
+                                                        zIndex: 4,
+                                                        right: 0,
+                                                        top: 0,
+                                                        bottom: 0,
+                                                    }}>
+                                                        <FontAwesomeIcon 
+                                                            icon={faTrash}
+                                                            style={{
+                                                                color: "#fff",
+                                                                width: "20px",
+                                                                height: "20px",
+                                                            }}
+                                                        />
+                                                    </button>
+                                                    {
+                                                    isContentVisible && (
+                                                    <div className="popup">
+                                                        <div className="popup-content">
+                                                            <h2> Do you want to delete label?</h2>
+                                                            <p>Deleting will remove the label from database</p>
+                                                            <div className="buttons">
+                                                                <button className="btn" onClick={() => {handleLabelDelete()}}>Delete</button>
+                                                                <button className="btn" onClick={(e) => handleClosePopup(e)}>Cancel</button>
+                                                            </div>
+                                                            <button className="close" onClick={(e) => handleClosePopup(e)}>
+                                                                <FontAwesomeIcon
+                                                                icon={faClose}
+                                                                style={{ color: '#000', width: '25px', height: '25px' }}
+                                                                />
+                                                            </button>
                                                         </div>
-                                                        <button className="close" onClick={(e) => handleClosePopup(e)}>
-                                                            <FontAwesomeIcon
-                                                            icon={faClose}
-                                                            style={{ color: '#000', width: '25px', height: '25px' }}
-                                                            />
-                                                        </button>
                                                     </div>
-                                                </div>
-                                                )
-                                              }
-                                            </li>
-                                            
-                                              </>
+                                                    )
+                                                }
+                                                </li>
+                                            </>
                                         )
                                     )
                                 })}
@@ -572,7 +643,7 @@ function Copy() {
                         }}
                         >Select a database</h5>)
                     :
-                    <h5
+                        <h5
                         className='d-flex justify-content-center align-items-center text-white'
                         style={{
                             minHeight: '70vh',

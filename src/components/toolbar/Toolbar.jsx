@@ -192,7 +192,7 @@ const RichTextEditor = () => {
     .then(function (response) {
         console.log("Data", response.data);
         toast.success("Data Deleted", { autoClose: 1000 });
-        axios.post(API.BASE_URL + 'ShowData/', {
+        axios.post(API.BASE_URL + 'userlabeldata/', {
           id: singleLabelId,
           database_id: selectedValue
       })
@@ -202,7 +202,7 @@ const RichTextEditor = () => {
           setNewText('')
           setMessage('')
           console.log("PDF response Data", response.data);
-          setPdfData(response.data)
+          setPdfData(response.data.data)
       })
       .catch(function (error) {
           console.log(error)
@@ -280,15 +280,13 @@ const RichTextEditor = () => {
             </div>
           )
           :
-            pdfData && pdfData?.length > 0 ? (
-              pdfData?.map((data, i) => {
-                return(
+            pdfData?.Question?.length > 0  ? (
                   <>
                   <div className="questions">
                     <div className="question-text d-flex flex-column">
-                      <label htmlFor="">Q. {data.Question}</label>
-                      <p htmlFor="">Ans. {data.Answer}</p>
-                      <button className='mt-2' onClick={(e) => handleShowPopup(e, data.id)}>Delete</button>
+                      <label htmlFor="">Q. {pdfData.Question}</label>
+                      <p htmlFor="">Ans. {pdfData.Answer}</p>
+                      <button className='mt-2' onClick={(e) => handleShowPopup(e, pdfData.id)}>Delete</button>
                     </div>
                   </div>
                   {
@@ -312,10 +310,8 @@ const RichTextEditor = () => {
                     )
                   }
                   </>
-                )
-              })
             ) :
-            pdfData && pdfData?.message ? (
+            pdfData?.Question?.length > 0 ? (
               <div className="questions no-data">
                     <div className="question-text d-flex flex-column">
                       <label htmlFor="">{pdfData.message}</label>
