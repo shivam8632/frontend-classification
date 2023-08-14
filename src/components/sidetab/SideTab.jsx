@@ -338,9 +338,9 @@ function Copy() {
     const handleLabelDelete = () => {
         setLoading(true);
         setContentVisible(false);
-        axios.post(API.BASE_URL + 'deletelabel/', {
-            database_id: selectedValue,
-            label_id: labelDelId,
+        axios.post(API.BASE_URL + 'userlabeldelete/', {
+            user_id: 2,
+            label_id: activeId,
         })
         .then(function (response) {
             console.log("Delete Label", response);
@@ -379,6 +379,7 @@ function Copy() {
     console.log("pdfData", pdfLabel)
     console.log("lnkllm", questions)
     console.log("label id", activeId)
+    console.log("labelDelId", labelDelId)
     
 
   return (
@@ -442,7 +443,7 @@ function Copy() {
                                                         marginRight: 30,
                                                     }}
                                                 /> 
-                                                <button className='delete-icon' onClick={(e) => {handleShowPopup(e, text.id[i])}}
+                                                <button className='delete-icon' onClick={(e) => {handleShowPopup(e, text.id)}}
                                                     style={{
                                                         position: 'relative',
                                                         zIndex: 4,

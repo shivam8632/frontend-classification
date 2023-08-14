@@ -185,9 +185,9 @@ const RichTextEditor = () => {
     console.log("Label Data ID" ,labelDataId)
     setContentVisible(false)
     setLoading(true)
-    axios.post(API.BASE_URL + 'deletequestion/', {
+    axios.post(API.BASE_URL + 'userquestionsdelete/', {
       question_id: labelDataId,
-      database_id: selectedValue,
+      user_id: 2,
     },)
     .then(function (response) {
         console.log("Data", response.data);
@@ -223,6 +223,7 @@ const RichTextEditor = () => {
   console.log("NewText", newText)
   console.log("predictionQues", predictionQues)
   console.log("selectedQuestions",selectedQuestions)
+  console.log("pdf data in toolbar", pdfData)
   
   
   return (
@@ -280,15 +281,19 @@ const RichTextEditor = () => {
             </div>
           )
           :
-            pdfData?.Question?.length > 0  ? (
+            pdfData?.length > 0  ? (
                   <>
-                  <div className="questions">
-                    <div className="question-text d-flex flex-column">
-                      <label htmlFor="">Q. {pdfData.Question}</label>
-                      <p htmlFor="">Ans. {pdfData.Answer}</p>
-                      <button className='mt-2' onClick={(e) => handleShowPopup(e, pdfData.id)}>Delete</button>
-                    </div>
-                  </div>
+                  {pdfData.map((data,i) => {
+                    return(
+                      <div className="questions" key={i}>
+                        <div className="question-text d-flex flex-column">
+                          <label htmlFor="">Q. {data.Question}</label>
+                          <p htmlFor="">Ans. {data.Answer}</p>
+                          <button className='mt-2' onClick={(e) => handleShowPopup(e, data.id)}>Delete</button>
+                        </div>
+                      </div>
+                    )
+                  })}
                   {
                     isContentVisible && (
                       <div className="popup">
