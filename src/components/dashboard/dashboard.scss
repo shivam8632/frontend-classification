@@ -33,8 +33,13 @@
                         }
                     }
                 }
+                ul.user-list {
+                    li {
+                        padding: .8rem 1rem;
+                    }
+                }
                 li {
-                    padding: .8rem 1rem;
+                    
                     cursor: pointer;
                 }
                 li.active {

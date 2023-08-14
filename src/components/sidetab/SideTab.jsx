@@ -414,7 +414,7 @@ function Copy() {
                 <h3 className='text-white px-4'>Label</h3>
                 <>
                     {questions?.length > 0 ? (
-                        <ul className='py-4 px-0'>
+                        <ul className='py-4 px-0 user-list'>
                             {questions?.map((text, i) => {
                                 return(
                                     text.topic_name != '' && (
@@ -561,7 +561,7 @@ function Copy() {
                     <>
                     
                         {questions?.length > 0 ? (
-                            <ul className='py-4 px-0'>
+                            <ul className='py-4 px-0 user-list'>
                                 {questions?.map((text, i) => {
                                     
                                     return(

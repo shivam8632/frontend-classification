@@ -37,15 +37,22 @@ function Login() {
             })
             .catch(function (error) {
                 console.log(error);
-                toast.error("Error during sign in", { autoClose: 1000 });
+                if(error.response.data.message) {
+                    toast.warn(error.response.data.message, { autoClose: 1000 })
+                }
+                else {
+                    toast.error("Error during sign in", { autoClose: 1000 });
+                }
             })
         })
         .catch(function (error) {
             console.log(error);
-            if(error.message) {
-                toast.warn(error.message, { autoClose: 1000 })
+            if(error.response.data.message) {
+                toast.warn(error.response.data.message, { autoClose: 1000 })
             }
-            toast.error("Error during sign in", { autoClose: 1000 });
+            else {
+                toast.error("Error during sign in", { autoClose: 1000 });
+            }
         })
         .finally(()=>setLoading(false))
     }
