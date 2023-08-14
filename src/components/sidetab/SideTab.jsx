@@ -162,7 +162,7 @@ function Copy() {
     useEffect(() => {
         if(checkAdmin == 'false') {
             axios.post(API.BASE_URL + 'userlabel/', {
-            user_id: '2'
+            user_id: user_id
             })
             .then(function (response) {
                 console.log("User Label", response);
@@ -316,7 +316,7 @@ function Copy() {
         setSingleLabelId(id)
         axios.post(API.BASE_URL + 'userlabeldata/', {
             label_id: id,
-            user_id: '2'
+            user_id: user_id
         })
         .then(function (response) {
             setPrimaryInput('');
@@ -339,7 +339,7 @@ function Copy() {
         setLoading(true);
         setContentVisible(false);
         axios.post(API.BASE_URL + 'userlabeldelete/', {
-            user_id: 2,
+            user_id: user_id,
             label_id: activeId,
         })
         .then(function (response) {

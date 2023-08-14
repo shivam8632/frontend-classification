@@ -187,7 +187,7 @@ const RichTextEditor = () => {
     setLoading(true)
     axios.post(API.BASE_URL + 'userquestionsdelete/', {
       question_id: labelDataId,
-      user_id: 2,
+      user_id: user_id,
     },)
     .then(function (response) {
         console.log("Data", response.data);
