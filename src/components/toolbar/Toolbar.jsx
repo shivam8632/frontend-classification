@@ -54,8 +54,8 @@ const RichTextEditor = () => {
             setText('');
             setResponseFrom('')
             setPrimaryInput('')
-            axios.post(API.BASE_URL + 'label/', {
-              database_id: selectedValue
+            axios.post(API.BASE_URL + 'userlabel/', {
+              user_id: user_id
           })
           .then(function (response) {
               console.log("Questions", response);
@@ -89,8 +89,8 @@ const RichTextEditor = () => {
             setText('');
             setResponseFrom('')
             setPrimaryInput('')
-            axios.post(API.BASE_URL + 'label/', {
-              database_id: selectedValue
+            axios.post(API.BASE_URL + 'userlabel/', {
+              user_id: user_id
           })
           .then(function (response) {
               console.log("Questions", response);
@@ -148,8 +148,8 @@ const RichTextEditor = () => {
     .then(function (response) {
         console.log("Save Data", response.data);
         toast.success('Data Saved Successfully', { autoClose: 1000 });
-        axios.post(API.BASE_URL + 'label/', {
-          database_id: selectedValue
+        axios.post(API.BASE_URL + 'userlabel/', {
+          user_id: user_id
       })
         .then(function (response) {
             console.log("Questions", response);
