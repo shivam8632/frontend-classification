@@ -657,11 +657,12 @@ function Copy() {
                 </MDBTabsPane>
 
                 <MDBTabsPane show={basicActive === 'tab3'}>
-                    <ul className="p-0">
+                    <ul className="p-0 user-list">
                         {pdfLabel.length > 0 ? (
                             pdfLabel?.map((history, i) => {
+                                console.log("history.pdf[i]", history.pdf)
                                 return (
-                                <a href={history.pdf[i]} download={history.pdf[i]} target="_blank" style={{textDecoration: 'none'}}>
+                                <a href={history.pdf} download={history.pdf} target="_blank" style={{textDecoration: 'none'}}>
                                     <li className='text-white d-flex align-items-center' style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}}>
                                     <FontAwesomeIcon 
                                         icon={faMessage}
